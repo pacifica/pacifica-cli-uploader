@@ -3,7 +3,7 @@
 import sys
 import argparse
 from os import getenv
-from metadata import metadata_decode
+from pacifica.uploader.metadata import metadata_decode
 from .methods import query, upload, configure
 
 
