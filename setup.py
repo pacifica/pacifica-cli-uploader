@@ -11,6 +11,6 @@ setup(name='PacificaCLIUploader',
       description='Pacifica CLI Uploader',
       author='David Brown',
       author_email='david.brown@pnnl.gov',
-      packages=['cli'],
+      packages=['uploader_cli'],
       scripts=['CLIUploader.py'],
       install_requires=[str(ir.req) for ir in INSTALL_REQS])

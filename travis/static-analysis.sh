@@ -1,4 +1,4 @@
 #!/bin/bash
 pre-commit run --all-files
-pylint --rcfile=pylintrc pacifica/uploader/cli *.py
-radon cc pacifica/uploader/cli *.py
+pylint --rcfile=pylintrc uploader_cli *.py
+radon cc uploader_cli *.py
