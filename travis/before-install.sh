@@ -6,7 +6,7 @@ if [ -z "$RUN_LINTS" ]; then
   mysql -e 'CREATE DATABASE pacifica_ingest;'
   export POSTGRES_ENV_POSTGRES_USER=postgres
   export POSTGRES_ENV_POSTGRES_PASSWORD=
-  export MYSQL_ENV_MYSQL_USER=travis
+  export MYSQL_ENV_MYSQL_USER=root
   export MYSQL_ENV_MYSQL_PASSWORD=
   archiveinterfaceserver.py --config travis/config.cfg &
   echo $! > archiveinterface.pid

@@ -1,12 +1,12 @@
 celery
 codeclimate-test-reporter
 coverage>=4.0,<4.4
-git+git://github.com/pacifica/pacifica-archiveinterface.git#egg=PacificaArchiveInterface
-git+git://github.com/pacifica/pacifica-ingest.git#egg=PacificaIngest
-git+git://github.com/pacifica/pacifica-metadata.git#egg=PacificaMetadata
-git+git://github.com/pacifica/pacifica-policy.git#egg=PacificaPolicy
-git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
-git+git://github.com/pacifica/pacifica-uniqueid.git#egg=PacificaUniqueID
+-e git://github.com/pacifica/pacifica-archiveinterface.git#egg=PacificaArchiveInterface
+-e git://github.com/pacifica/pacifica-ingest.git#egg=PacificaIngest
+-e git://github.com/pacifica/pacifica-metadata.git#egg=PacificaMetadata
+-e git://github.com/pacifica/pacifica-policy.git#egg=PacificaPolicy
+-e git://github.com/pacifica/pacifica-uniqueid.git#egg=PacificaUniqueID
+-e git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
 pre-commit
 pylint
 pytest
