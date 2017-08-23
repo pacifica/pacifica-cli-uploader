@@ -1,0 +1,28 @@
+services:
+ - postgresql
+ - mysql
+ - elasticsearch
+ - redis-server
+
+addons:
+  apt:
+    sources:
+      - elasticsearch-5.x
+    packages:
+      - elasticsearch
+      - oracle-java8-set-default
+
+language: python
+python:
+ - 2.7
+
+matrix:
+  include:
+    - python: 2.7
+    - python: 2.7
+      env: RUN_LINTS=true
+cache: pip
+
+before_install: bash -xe travis/before-install.sh
+install: pip install -r requirements-dev.txt
+script: bash -xe travis/test-script.sh
