@@ -1,0 +1,72 @@
+[
+  {
+    "destinationTable": "Transactions.submitter",
+    "diplayFormat": "%(first_name)s %(last_name)s",
+    "displayTitle": "Currently Logged On",
+    "displayType": "logged_on",
+    "metaID": "logon",
+    "queryDependency": {
+      "network_id": "logon"
+    },
+    "queryFields": [
+      "first_name",
+      "last_name",
+      "_id"
+    ],
+    "sourceTable": "users",
+    "value": "",
+    "valueField": "_id"
+  },
+  {
+    "destinationTable": "Transactions.instrument",
+    "diplayFormat": "%(_id)s %(name_short)s - %(display_name)s",
+    "displayTitle": "Instrument ID",
+    "displayType": "select",
+    "metaID": "instrument",
+    "queryDependency": {},
+    "queryFields": [
+      "_id",
+      "name_short",
+      "display_name"
+    ],
+    "sourceTable": "instruments",
+    "value": "",
+    "valueField": "_id"
+  },
+  {
+    "destinationTable": "Transactions.proposal",
+    "diplayFormat": "%(_id)s %(title)s",
+    "displayTitle": "Proposal ID",
+    "displayType": "select",
+    "metaID": "proposal",
+    "queryDependency": {
+      "instrument_id": "instrument"
+    },
+    "queryFields": [
+      "_id",
+      "title"
+    ],
+    "sourceTable": "proposals",
+    "value": "",
+    "valueField": "_id"
+  },
+  {
+    "destinationTable": "TransactionKeyValue",
+    "diplayFormat": "%(first_name)s %(last_name)s",
+    "displayTitle": "User ID the data is for",
+    "displayType": "select",
+    "key": "User of Record",
+    "metaID": "user-of-record",
+    "queryDependency": {
+      "proposal_id": "proposal"
+    },
+    "queryFields": [
+      "first_name",
+      "last_name",
+      "_id"
+    ],
+    "sourceTable": "users",
+    "value": "",
+    "valueField": "_id"
+  }
+]
