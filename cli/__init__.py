@@ -2,15 +2,16 @@
 """The CLI module contains all the logic needed to run a CLI."""
 import sys
 import argparse
-from os import getenv, path
+from os import getenv
 from metadata import metadata_decode
 from .methods import query, upload, configure
+
 
 def mangle_config_argument(argv):
     """Get the config argument out of argv and return stripped version."""
     config_arg = '--config'
     len_arg = len(config_arg)
-    starts_argv = [ arg[:len_arg] for arg in argv ]
+    starts_argv = [arg[:len_arg] for arg in argv]
     if config_arg in starts_argv:
         if config_arg in argv:
             config_file = argv[argv.index(config_arg)+1]
@@ -21,6 +22,7 @@ def mangle_config_argument(argv):
             del argv[starts_argv.index(config_arg)]
         return (config_file, argv)
     return (None, argv)
+
 
 def main():
     """Main method to deal with command line argument parsing."""
@@ -38,17 +40,24 @@ def main():
     query_choices = []
     for config_part in config_data:
         if not config_part.value:
-            upload_parser.add_argument('--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
-                                help=config_part.displayTitle, required=True)
+            upload_parser.add_argument(
+                '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
+                help=config_part.displayTitle, required=True
+            )
             query_choices.append(config_part.metaID)
-    query_parser.add_argument('--query', '-q', choices=query_choices, required=True,
-                              help='Query on the metadata for results.')
+    query_parser.add_argument(
+        '--query', '-q', choices=query_choices, required=True,
+        help='Query on the metadata for results.'
+    )
 
-    query_parser.add_argument('regex', metavar='REGEX',
-                        help='regular expression over the returned data.')
+    query_parser.add_argument(
+        'regex', metavar='REGEX',
+        help='regular expression over the returned data.'
+    )
     query_parser.set_defaults(func=query)
-    upload_parser.add_argument('files', metavar='FILES', nargs='+',
-                        help='files you want to upload.')
+    upload_parser.add_argument(
+        'files', metavar='FILES', nargs='+', help='files you want to upload.'
+    )
     upload_parser.set_defaults(func=upload)
     config_parser.set_defaults(func=configure)
 
