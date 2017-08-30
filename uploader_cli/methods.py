@@ -70,9 +70,9 @@ What are the endpoint URLs for the following...
     for endpnt in ['upload', 'status', 'policy']:
         default_url = global_ini.get('endpoints', '{}_url'.format(endpnt))
         stdout.write('{} URL ({}): '.format(endpnt.capitalize(), default_url))
-        input = stdin.readline().strip()
-        if input:
-            global_ini.set('endpoints', '{}_url'.format(endpnt), input)
+        strip_input = stdin.readline().strip()
+        if strip_input:
+            global_ini.set('endpoints', '{}_url'.format(endpnt), strip_input)
 
 
 def configure_client_ssl(global_ini):
@@ -80,9 +80,9 @@ def configure_client_ssl(global_ini):
     for ssl_part in ['key', 'cert']:
         default_cfg = global_ini.get('authentication', ssl_part)
         stdout.write('Client {} ({}): '.format(ssl_part.capitalize(), default_cfg))
-        input = stdin.readline().strip()
-        if input:
-            global_ini.set('authentication', ssl_part, input)
+        strip_input = stdin.readline().strip()
+        if strip_input:
+            global_ini.set('authentication', ssl_part, strip_input)
 
 
 def configure_basic_auth(global_ini):
@@ -90,9 +90,9 @@ def configure_basic_auth(global_ini):
     for auth_part in ['username', 'password']:
         default_cfg = global_ini.get('authentication', auth_part)
         stdout.write('{} ({}): '.format(auth_part.capitalize(), default_cfg))
-        input = stdin.readline().strip()
-        if input:
-            global_ini.set('authentication', auth_part, input)
+        strip_input = stdin.readline().strip()
+        if strip_input:
+            global_ini.set('authentication', auth_part, strip_input)
 
 
 def configure_auth(global_ini):
@@ -106,9 +106,9 @@ There are three kinds of authentication types supported.
 """
     default_auth_type = global_ini.get('authentication', 'type')
     stdout.write('Authentication Type ({}): '.format(default_auth_type))
-    input = stdin.readline().strip()
-    if input and input in ['clientssl', 'basic', 'None']:
-        global_ini.set('authentication', 'type', input)
+    strip_input = stdin.readline().strip()
+    if strip_input and strip_input in ['clientssl', 'basic', 'None']:
+        global_ini.set('authentication', 'type', strip_input)
     auth_type = global_ini.get('authentication', 'type')
     if auth_type == 'clientssl':
         configure_client_ssl(global_ini)

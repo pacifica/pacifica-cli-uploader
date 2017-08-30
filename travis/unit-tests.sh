@@ -7,7 +7,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query -
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --logon 10 --instrument 54 --proposal 1234a --user-of-record 11 file
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
+yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 coverage report --show-missing --fail-under 100
 if [[ $CODECLIMATE_REPO_TOKEN ]] ; then
   codeclimate-test-reporter
