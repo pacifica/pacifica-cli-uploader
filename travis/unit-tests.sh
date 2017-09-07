@@ -23,7 +23,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload 
 # Configure commands
 ############################
 yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-printf '\r\r\rclientssl\r\r\r' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
+printf '\n\n\nclientssl\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 
 coverage report --show-missing --fail-under 100
 if [[ $CODECLIMATE_REPO_TOKEN ]] ; then
