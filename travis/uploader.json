@@ -1,13 +1,11 @@
 [
   {
     "destinationTable": "Transactions.submitter",
-    "diplayFormat": "%(first_name)s %(last_name)s",
+    "diplayFormat": "%(_id)s - %(first_name)s %(last_name)s",
     "displayTitle": "Currently Logged On",
     "displayType": "logged_on",
     "metaID": "logon",
-    "queryDependency": {
-      "network_id": "logon"
-    },
+    "queryDependency": {},
     "queryFields": [
       "first_name",
       "last_name",

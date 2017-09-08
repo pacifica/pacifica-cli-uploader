@@ -51,7 +51,7 @@ def main():
     )
 
     query_parser.add_argument(
-        'regex', metavar='REGEX',
+        'regex', metavar='REGEX', nargs='?',
         help='regular expression over the returned data.'
     )
     query_parser.set_defaults(func=query)

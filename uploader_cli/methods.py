@@ -2,8 +2,10 @@
 """Methods for the sub commands to run."""
 from __future__ import absolute_import
 from ConfigParser import ConfigParser
-from os import makedirs
+from getpass import getuser
+from os import makedirs, environ
 from os.path import expanduser, join, isfile, isdir
+from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth
 
 
@@ -20,6 +22,13 @@ def save_global_config(global_ini):
     """Save the global config to the path."""
     global_config = global_config_paths()
     global_ini.write(open(global_config, 'w'))
+
+
+def set_environment_vars(global_ini):
+    """Set some environment variables to be used later."""
+    for var in ['upload_url', 'status_url', 'policy_url']:
+        value = global_ini.get('endpoints', var)
+        environ[var.upper()] = value
 
 
 def generate_global_config():
@@ -41,23 +50,45 @@ def generate_global_config():
     else:
         print 'Generating New Configuration.'
     save_global_config(global_ini)
+    set_environment_vars(global_ini)
     return global_ini
 
 
-def query_user_section():
-    """Query the user for a section of config."""
+def generate_requests_auth(global_ini):
+    """Generate arguments to requests for authentication."""
+    auth_type = global_ini.get('authentication', 'type')
+    if auth_type == 'clientssl':
+        return {
+            'cert': (
+                global_ini.get('authentication', 'cert'),
+                global_ini.get('authentication', 'key')
+            )
+        }
+    elif auth_type == 'basic':
+        return {
+            'auth': (
+                global_ini.get('authentication', 'username'),
+                global_ini.get('authentication', 'password')
+            )
+        }
+    return {}
 
 
-def upload(args, config_data):
+def upload(args, interface_data):
     """Upload the data based on bits."""
-    print args
-    print config_data
+    # global_ini = generate_global_config()
+    print args.query
+    print interface_data
 
 
-def query(args, config_data):
+def query(args, interface_data):
     """Query from the metadata configuration."""
-    print args
-    print config_data
+    global_ini = generate_global_config()
+    auth = generate_requests_auth(global_ini)
+    md_update = MetaUpdate(getuser(), auth=auth)
+    md_update.extend(interface_data)
+    md_update.update_parents(args.query)
+    print md_update[args.query].query_results
 
 
 def configure(args, config_data):
@@ -65,6 +96,4 @@ def configure(args, config_data):
     global_ini = generate_global_config()
     configure_url_endpoints(global_ini)
     configure_auth(global_ini)
-    print args
-    print config_data
     save_global_config(global_ini)
