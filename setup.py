@@ -13,4 +13,7 @@ setup(name='PacificaCLIUploader',
       author_email='david.brown@pnnl.gov',
       packages=['uploader_cli'],
       scripts=['CLIUploader.py'],
+      entry_points={
+          'console_scripts': ['cliuploader=uploader_cli:main'],
+      },
       install_requires=[str(ir.req) for ir in INSTALL_REQS])
