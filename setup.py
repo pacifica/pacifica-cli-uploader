@@ -14,6 +14,6 @@ setup(name='PacificaCLIUploader',
       packages=['uploader_cli'],
       scripts=['CLIUploader.py'],
       entry_points={
-          'console_scripts': ['cliuploader=uploader_cli:main'],
+          'console_scripts': ['CLIUploader=uploader_cli:main'],
       },
       install_requires=[str(ir.req) for ir in INSTALL_REQS])
