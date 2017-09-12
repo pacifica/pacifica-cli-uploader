@@ -23,7 +23,7 @@ def find_leaf_node(md_update):
             if query_obj:
                 break
     md_update.update_parents(query_obj.metaID)
-    return query_obj
+    return md_update[query_obj.metaID]
 
 
 def paged_content(title, display_data, valid_ids):
@@ -74,6 +74,7 @@ def set_results(md_update, query_obj, default_id, interactive=False):
     if interactive:
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
     else:
+        print 'Setting {} to {}.'.format(query_obj.metaID, default_id)
         selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
         new_obj = query_obj._replace(value=selected_id)
@@ -84,10 +85,13 @@ def query_main(md_update, args):
     """Query from the metadata configuration."""
     while not md_update.is_valid():
         query_obj = find_leaf_node(md_update)
+        default_id = getattr(args, query_obj.metaID, None)
+        if not default_id:
+            default_id = md_update[query_obj.metaID].value
         set_results(
             md_update,
             query_obj,
-            getattr(args, query_obj.metaID, md_update[query_obj.metaID].value),
+            default_id,
             args.interactive
         )
     print [(obj.metaID, obj.value) for obj in md_update]
