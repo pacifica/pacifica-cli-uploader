@@ -12,7 +12,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configu
 ############################
 # Query commands
 ############################
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query -q instrument regex
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --instrument 54
 
 ############################
 # Upload commands

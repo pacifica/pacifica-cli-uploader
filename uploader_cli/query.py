@@ -39,6 +39,8 @@ def interactive_select_loop(md_update, query_obj, default_id):
         valid_ids.append(str(obj['_id']))
         display_data[str(obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     selected_id = False
+    if len(valid_ids) == 1:
+        return valid_ids[0]
     while not selected_id:
         page(paged_content(query_obj.displayTitle, display_data, valid_ids))
         stdout.write('Select ID ({}): '.format(default_id))
@@ -57,7 +59,6 @@ def set_results(md_update, query_obj, passed_id=False, interactive=False):
     else:
         default_id = md_update[query_obj.metaID].value
     if interactive:
-        # dump the results to a pager
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
 
     if selected_id != md_update[query_obj.metaID].value:
