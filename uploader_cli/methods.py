@@ -85,7 +85,10 @@ def query(args, interface_data):
     """Query from the metadata configuration."""
     global_ini = generate_global_config()
     auth = generate_requests_auth(global_ini)
-    md_update = MetaUpdate(getattr(args, 'logon', getuser()), auth=auth)
+    user_name = getattr(args, 'logon', None)
+    if not user_name:
+        user_name = getuser()
+    md_update = MetaUpdate(user_name, auth=auth)
     md_update.extend(interface_data)
     query_main(md_update, args)
 
