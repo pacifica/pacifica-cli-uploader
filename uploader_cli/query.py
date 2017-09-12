@@ -60,7 +60,8 @@ def set_results(md_update, query_obj, passed_id=False, interactive=False):
         default_id = md_update[query_obj.metaID].value
     if interactive:
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
-
+    else:
+        selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
         new_obj = query_obj._replace(value=selected_id)
         md_update[query_obj.metaID] = new_obj
