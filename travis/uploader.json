@@ -1,7 +1,7 @@
 [
   {
     "destinationTable": "Transactions.submitter",
-    "diplayFormat": "%(_id)s - %(first_name)s %(last_name)s",
+    "displayFormat": "{_id} - {first_name} {last_name}",
     "displayTitle": "Currently Logged On",
     "displayType": "logged_on",
     "metaID": "logon",
@@ -17,7 +17,7 @@
   },
   {
     "destinationTable": "Transactions.instrument",
-    "diplayFormat": "%(_id)s %(name_short)s - %(display_name)s",
+    "displayFormat": "{_id} {name_short} - {display_name}",
     "displayTitle": "Instrument ID",
     "displayType": "select",
     "metaID": "instrument",
@@ -33,7 +33,7 @@
   },
   {
     "destinationTable": "Transactions.proposal",
-    "diplayFormat": "%(_id)s %(title)s",
+    "displayFormat": "{_id} - {title}",
     "displayTitle": "Proposal ID",
     "displayType": "select",
     "metaID": "proposal",
@@ -50,7 +50,7 @@
   },
   {
     "destinationTable": "TransactionKeyValue",
-    "diplayFormat": "%(first_name)s %(last_name)s",
+    "displayFormat": "{_id} - {first_name} {last_name}",
     "displayTitle": "User ID the data is for",
     "displayType": "select",
     "key": "User of Record",

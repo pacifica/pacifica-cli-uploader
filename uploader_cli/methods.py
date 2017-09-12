@@ -7,6 +7,7 @@ from os import makedirs, environ
 from os.path import expanduser, join, isfile, isdir
 from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth
+from .query import query_main
 
 
 def global_config_paths():
@@ -77,7 +78,7 @@ def generate_requests_auth(global_ini):
 def upload(args, interface_data):
     """Upload the data based on bits."""
     # global_ini = generate_global_config()
-    print args.query
+    print args.upload
     print interface_data
 
 
@@ -87,8 +88,7 @@ def query(args, interface_data):
     auth = generate_requests_auth(global_ini)
     md_update = MetaUpdate(getuser(), auth=auth)
     md_update.extend(interface_data)
-    md_update.update_parents(args.query)
-    print md_update[args.query].query_results
+    query_main(md_update, args)
 
 
 def configure(args, config_data):

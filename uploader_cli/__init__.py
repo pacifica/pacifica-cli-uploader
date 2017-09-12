@@ -37,22 +37,19 @@ def main():
     if not config_file:
         config_file = default_config
     config_data = metadata_decode(open(config_file).read())
-    query_choices = []
     for config_part in config_data:
         if not config_part.value:
             upload_parser.add_argument(
                 '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
                 help=config_part.displayTitle, required=True
             )
-            query_choices.append(config_part.metaID)
+            query_parser.add_argument(
+                '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
+                help=config_part.displayTitle, required=False
+            )
     query_parser.add_argument(
-        '--query', '-q', choices=query_choices, required=True,
-        help='Query on the metadata for results.'
-    )
-
-    query_parser.add_argument(
-        'regex', metavar='REGEX', nargs='?',
-        help='regular expression over the returned data.'
+        '--interactive', default=False, action='store_true', dest='interactive',
+        help='Interact with the query engine.', required=False
     )
     query_parser.set_defaults(func=query)
     upload_parser.add_argument(
