@@ -75,11 +75,10 @@ def generate_requests_auth(global_ini):
     return {}
 
 
-def upload(args, interface_data):
+def upload(_args, _interface_data):
     """Upload the data based on bits."""
     # global_ini = generate_global_config()
-    print args.upload
-    print interface_data
+    pass
 
 
 def query(args, interface_data):
