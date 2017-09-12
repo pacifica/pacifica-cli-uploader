@@ -91,7 +91,7 @@ def query(args, interface_data):
     query_main(md_update, args)
 
 
-def configure(args, config_data):
+def configure(_args, _config_data):
     """Configure the client by parsing current configuration."""
     global_ini = generate_global_config()
     configure_url_endpoints(global_ini)

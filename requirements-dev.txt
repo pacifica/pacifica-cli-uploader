@@ -7,6 +7,7 @@ coverage>=4.0,<4.4
 -e git://github.com/pacifica/pacifica-policy.git#egg=PacificaPolicy
 -e git://github.com/pacifica/pacifica-uniqueid.git#egg=PacificaUniqueID
 -e git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
+pager
 pre-commit
 pylint
 pytest
