@@ -37,7 +37,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload 
 ############################
 # PyTest coverage
 ############################
-coverage run --include='uploader_cli/*,CLIUploader.py' -m pytest -v
+coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v
 
 coverage report --show-missing --fail-under 100
 if [[ $CODECLIMATE_REPO_TOKEN ]] ; then
