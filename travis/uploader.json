@@ -16,22 +16,6 @@
     "valueField": "_id"
   },
   {
-    "destinationTable": "Transactions.instrument",
-    "displayFormat": "{_id} {name_short} - {display_name}",
-    "displayTitle": "Instrument ID",
-    "displayType": "select",
-    "metaID": "instrument",
-    "queryDependency": {},
-    "queryFields": [
-      "_id",
-      "name_short",
-      "display_name"
-    ],
-    "sourceTable": "instruments",
-    "value": "",
-    "valueField": "_id"
-  },
-  {
     "destinationTable": "Transactions.proposal",
     "displayFormat": "{_id} - {title}",
     "displayTitle": "Proposal ID",
@@ -45,6 +29,22 @@
       "title"
     ],
     "sourceTable": "proposals",
+    "value": "",
+    "valueField": "_id"
+  },
+  {
+    "destinationTable": "Transactions.instrument",
+    "displayFormat": "{_id} {name_short} - {display_name}",
+    "displayTitle": "Instrument ID",
+    "displayType": "select",
+    "metaID": "instrument",
+    "queryDependency": {},
+    "queryFields": [
+      "_id",
+      "name_short",
+      "display_name"
+    ],
+    "sourceTable": "instruments",
     "value": "",
     "valueField": "_id"
   },
