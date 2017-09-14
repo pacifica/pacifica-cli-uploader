@@ -28,6 +28,7 @@ python CLIUploader.py configure
 # Query commands
 ############################
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --instrument 54 --logon dmlb2001
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --instrument 54
 
 ############################
 # Upload commands
