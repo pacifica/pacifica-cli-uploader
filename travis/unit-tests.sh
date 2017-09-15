@@ -5,7 +5,6 @@
 coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help
 export UPLOADER_CONFIG=travis/uploader.json
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --help
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help
 
