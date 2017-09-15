@@ -5,6 +5,7 @@ import argparse
 from os import getenv
 from uploader.metadata import metadata_decode
 from .methods import upload, configure
+from .utils import system_config_path
 
 
 def mangle_config_argument(argv):
@@ -31,7 +32,7 @@ def main():
     upload_parser = subparsers.add_parser('upload', help='upload help', description='perform upload')
     config_parser = subparsers.add_parser('configure', help='configure help', description='setup configuration')
 
-    default_config = getenv('UPLOADER_CONFIG', 'uploader.json')
+    default_config = getenv('UPLOADER_CONFIG', system_config_path('uploader.json'))
     config_file, argv = mangle_config_argument(sys.argv)
     if not config_file:
         config_file = default_config

@@ -3,27 +3,19 @@
 from __future__ import absolute_import
 from ConfigParser import ConfigParser
 from getpass import getuser
-from os import makedirs, environ
-from os.path import expanduser, join, isfile, isdir
+from os import environ
+from os.path import isfile
 from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth
 from .query import query_main
 from .upload import upload_main
+from .utils import system_config_path, user_config_path
 
 
-def global_config_paths():
-    """Return the global configuration path."""
-    home = expanduser('~')
-    pacifica_local_state = join(home, '.pacifica_cli')
-    if not isdir(pacifica_local_state):
-        makedirs(pacifica_local_state, 0700)
-    return join(pacifica_local_state, 'config.ini')
-
-
-def save_global_config(global_ini):
+def save_user_config(global_ini):
     """Save the global config to the path."""
-    global_config = global_config_paths()
-    global_ini.write(open(global_config, 'w'))
+    user_config = user_config_path('config.ini')
+    global_ini.write(open(user_config, 'w'))
 
 
 def set_environment_vars(global_ini):
@@ -35,8 +27,11 @@ def set_environment_vars(global_ini):
 
 def generate_global_config():
     """Generate a default configuration."""
-    global_config = global_config_paths()
+    user_config = user_config_path('config.ini')
+    system_config = system_config_path('config.ini')
     global_ini = ConfigParser()
+    global_ini.add_section('globals')
+    global_ini.set('globals', 'interactive', 'False')
     global_ini.add_section('endpoints')
     global_ini.set('endpoints', 'upload_url', 'https://ingest.example.com/upload')
     global_ini.set('endpoints', 'status_url', 'https://ingest.example.com/get_state')
@@ -47,11 +42,13 @@ def generate_global_config():
     global_ini.set('authentication', 'password', None)
     global_ini.set('authentication', 'cert', None)
     global_ini.set('authentication', 'key', None)
-    if isfile(global_config):
-        global_ini.read(global_config)
+    if isfile(system_config):
+        global_ini.read(system_config)
+    if isfile(user_config):
+        global_ini.read(user_config)
     else:
         print 'Generating New Configuration.'
-    save_global_config(global_ini)
+    save_user_config(global_ini)
     set_environment_vars(global_ini)
     return global_ini
 
@@ -99,4 +96,4 @@ def configure(_args, _config_data):
     global_ini = generate_global_config()
     configure_url_endpoints(global_ini)
     configure_auth(global_ini)
-    save_global_config(global_ini)
+    save_user_config(global_ini)
