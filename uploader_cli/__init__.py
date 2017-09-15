@@ -52,7 +52,7 @@ def main():
         help='Interact with the query engine.', required=False
     )
     upload_parser.add_argument(
-        'files', metavar='FILES', nargs='+', help='files you want to upload.'
+        'files', metavar='FILES', nargs='*', help='files you want to upload.'
     )
     upload_parser.set_defaults(func=upload)
     config_parser.set_defaults(func=configure)
