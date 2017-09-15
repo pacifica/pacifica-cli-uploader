@@ -1,7 +1,9 @@
 #!/usr/bin/python
 """These are the query methods used for interactive query."""
-from sys import stdin, stdout
-from pager import page
+from sys import stdin, stdout, stderr
+from subprocess import Popen, PIPE
+from os import getenv, pathsep, path
+import re
 
 
 def set_query_obj(dep_meta_ids, md_update, obj):
@@ -28,11 +30,18 @@ def find_leaf_node(md_update):
 
 def paged_content(title, display_data, valid_ids):
     """Display the data yielding results."""
+    num_re = re.compile('[0-9][0-9]')
+
+    def id_cmp(a_id, b_id):
+        """Compare two IDs by grabbing as many numbers as we can."""
+        int_a = int(num_re.match(a_id).group(0))
+        int_b = int(num_re.match(b_id).group(0))
+        return int_a < int_b
     yield """
 {} - Select an ID
 =====================================
 """.format(title)
-    for _id in sorted(valid_ids):
+    for _id in sorted(valid_ids, cmp=id_cmp):
         yield display_data[_id]
 
 
@@ -55,6 +64,40 @@ def set_selected_id(selected_id, default_id, valid_ids):
     return selected_id
 
 
+def parse_command(exe):
+    """Walk the system path and return executable path."""
+    real_cmd = None
+    for ext in getenv('PATHEXT', '').split(pathsep):  # pragma: no branch
+        for binpath in getenv('PATH').split(pathsep):  # pragma: no branch
+            check_cmd = path.join(binpath, exe.strip()) + ext
+            if path.isfile(check_cmd):  # pragma: no branch
+                real_cmd = check_cmd
+                break
+        if real_cmd:  # pragma: no branch
+            break
+    return real_cmd
+
+
+def execute_pager(content):
+    """Find the appropriate pager default is embedded python pager."""
+    pager_exes = [
+        [getenv('PAGER', None)],
+        ['more'],
+        ['less'],
+        ['most'],
+        ['python', '-m', 'pager', '-']
+    ]
+    for pager_exe in pager_exes:
+        if not pager_exe[0]:
+            continue
+        pager_full_path = parse_command(pager_exe[0])
+        if pager_full_path:
+            pager_exe[0] = pager_full_path
+            pager_proc = Popen(pager_exe, stdin=PIPE, stdout=stdout, stderr=stderr)
+            pager_proc.communicate(u'\n'.join(content))
+            return pager_proc.wait()
+
+
 def interactive_select_loop(md_update, query_obj, default_id):
     """While loop to ask users what they want to select."""
     valid_ids, display_data = format_query_results(md_update, query_obj)
@@ -62,7 +105,7 @@ def interactive_select_loop(md_update, query_obj, default_id):
     if len(valid_ids) == 1:
         return valid_ids[0]
     while not selected_id:
-        page(paged_content(query_obj.displayTitle, display_data, valid_ids))
+        execute_pager(paged_content(query_obj.displayTitle, display_data, valid_ids))
         stdout.write('Select ID ({}): '.format(default_id))
         selected_id = stdin.readline().strip()
         selected_id = set_selected_id(selected_id, default_id, valid_ids)
