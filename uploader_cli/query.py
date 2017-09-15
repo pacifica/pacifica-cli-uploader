@@ -138,3 +138,4 @@ def query_main(md_update, args):
             args.interactive
         )
     print [(obj.metaID, obj.value) for obj in md_update]
+    return md_update

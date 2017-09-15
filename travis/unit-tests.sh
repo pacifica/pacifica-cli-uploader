@@ -27,9 +27,9 @@ python CLIUploader.py configure
 ############################
 # Query commands
 ############################
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --instrument 54 --logon dmlb2001
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54 --logon dmlb2001
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -d'{ "network_id": "'`whoami`'"}'
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py query --instrument 54
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54
 
 ############################
 # Upload commands

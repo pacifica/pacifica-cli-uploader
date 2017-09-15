@@ -4,7 +4,7 @@ import sys
 import argparse
 from os import getenv
 from uploader.metadata import metadata_decode
-from .methods import query, upload, configure
+from .methods import upload, configure
 
 
 def mangle_config_argument(argv):
@@ -29,7 +29,6 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='sub-command help')
     upload_parser = subparsers.add_parser('upload', help='upload help', description='perform upload')
-    query_parser = subparsers.add_parser('query', help='query help', description='perform query')
     config_parser = subparsers.add_parser('configure', help='configure help', description='setup configuration')
 
     default_config = getenv('UPLOADER_CONFIG', 'uploader.json')
@@ -41,17 +40,16 @@ def main():
         if not config_part.value:
             upload_parser.add_argument(
                 '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
-                help=config_part.displayTitle, required=True
-            )
-            query_parser.add_argument(
-                '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
                 help=config_part.displayTitle, required=False
             )
-    query_parser.add_argument(
+    upload_parser.add_argument(
+        '--dry-run', default=False, action='store_true', dest='dry_run',
+        help='Don\'t upload, stop after query engine.', required=False
+    )
+    upload_parser.add_argument(
         '--interactive', default=False, action='store_true', dest='interactive',
         help='Interact with the query engine.', required=False
     )
-    query_parser.set_defaults(func=query)
     upload_parser.add_argument(
         'files', metavar='FILES', nargs='+', help='files you want to upload.'
     )
