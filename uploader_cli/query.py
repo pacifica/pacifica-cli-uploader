@@ -126,11 +126,12 @@ def set_results(md_update, query_obj, default_id, interactive=False):
 
 def filter_results(md_update, query_obj, regex):
     """Filter the results of query_obj by regex and save result back into md_update."""
+    print regex
     reg_engine = re.compile(regex)
     _valid_ids, display_data = format_query_results(md_update, query_obj)
     for index in range(len(query_obj.query_results)):
         res = query_obj.query_results[index]
-        if not reg_engine.match(display_data[res['metaID']]):
+        if not reg_engine.match(display_data[unicode(res['_id'])]):
             del query_obj.query_results[index]
 
 
@@ -138,7 +139,10 @@ def query_main(md_update, args):
     """Query from the metadata configuration."""
     while not md_update.is_valid():
         query_obj = find_leaf_node(md_update)
-        filter_results(md_update, query_obj, getattr(args, '{}_regex'.format(query_obj.metaID), '.*'))
+        regex = getattr(args, '{}_regex'.format(query_obj.metaID))
+        if not regex:
+            regex = '.*'
+        filter_results(md_update, query_obj, regex)
         default_id = getattr(args, query_obj.metaID, None)
         if not default_id:
             default_id = md_update[query_obj.metaID].value
