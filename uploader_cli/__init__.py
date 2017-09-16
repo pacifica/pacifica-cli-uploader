@@ -44,7 +44,7 @@ def main():
                 help=config_part.displayTitle, required=False
             )
     parser.add_argument(
-        '--verbose', dest='verbose',
+        '--verbose', dest='verbose', default='info',
         help='Enable verbose logging.', required=False
     )
     upload_parser.add_argument(
