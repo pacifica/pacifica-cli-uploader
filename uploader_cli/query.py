@@ -94,7 +94,7 @@ def execute_pager(content):
         if pager_full_path:
             pager_exe[0] = pager_full_path
             pager_proc = Popen(pager_exe, stdin=PIPE, stdout=stdout, stderr=stderr)
-            pager_proc.communicate(u'\n'.join(content))
+            pager_proc.communicate(u'\n'.join(content).encode('utf-8'))
             return pager_proc.wait()
 
 
