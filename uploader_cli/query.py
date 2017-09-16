@@ -50,8 +50,8 @@ def format_query_results(md_update, query_obj):
     valid_ids = []
     display_data = {}
     for obj in md_update[query_obj.metaID].query_results:
-        valid_ids.append(str(obj['_id']))
-        display_data[str(obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
+        valid_ids.append(unicode(obj['_id']))
+        display_data[unicode(obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     return (valid_ids, display_data)
 
 
@@ -59,7 +59,7 @@ def set_selected_id(selected_id, default_id, valid_ids):
     """Return the selected ID validating it first."""
     if not selected_id:
         selected_id = default_id
-    if str(selected_id) not in valid_ids:
+    if unicode(selected_id) not in valid_ids:
         selected_id = False
     return selected_id
 
