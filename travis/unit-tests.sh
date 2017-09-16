@@ -1,5 +1,10 @@
 #!/bin/bash
 ############################
+# Setup
+############################
+sudo mkdir /etc/pacifica-cli
+sudo cp config/example.ini /etc/pacifica-cli/config.ini
+############################
 # Help commands
 ############################
 coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help
