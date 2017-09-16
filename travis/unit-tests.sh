@@ -42,6 +42,7 @@ curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -
 # this will fail...
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose debug upload --dry-run --instrument 54 || true
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 9876 || true
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
 
 ############################
 # Upload commands
