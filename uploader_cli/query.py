@@ -137,5 +137,7 @@ def query_main(md_update, args):
             default_id,
             args.interactive
         )
+        if not md_update[query_obj.metaID].value:
+            raise RuntimeError('Could not find value for {}'.format(query_obj.metaID))
     print [(obj.metaID, obj.value) for obj in md_update]
     return md_update
