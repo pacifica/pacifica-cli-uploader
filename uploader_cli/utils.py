@@ -1,13 +1,13 @@
 #!/usr/bin/python
 """Utilities module for common methods."""
 import sys
-from os import makedirs
+from os import makedirs, pathsep
 from os.path import expanduser, join, isdir, isfile
 
 
 def system_config_path(config_file):
     """Return the system configuration path."""
-    for config_dir_path in [join('/etc', 'pacifica-cli'), join(sys.prefix, 'pacifica-cli')]:
+    for config_dir_path in [join('{}etc'.format(pathsep), 'pacifica-cli'), join(sys.prefix, 'pacifica-cli')]:
         config_path = join(config_dir_path, config_file)
         if isfile(config_path):
             return config_path
