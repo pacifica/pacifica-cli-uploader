@@ -40,6 +40,11 @@ def main():
     for config_part in config_data:
         if not config_part.value:
             upload_parser.add_argument(
+                '--{}-regex'.format(config_part.metaID), required=False,
+                dest='{}_regex'.format(config_part.metaID),
+                help='{} regular expression match.'.format(config_part.displayTitle)
+            )
+            upload_parser.add_argument(
                 '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
                 help=config_part.displayTitle, required=False
             )
