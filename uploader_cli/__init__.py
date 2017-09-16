@@ -43,6 +43,10 @@ def main():
                 '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
                 help=config_part.displayTitle, required=False
             )
+    parser.add_argument(
+        '--verbose', dest='verbose',
+        help='Enable verbose logging.', required=False
+    )
     upload_parser.add_argument(
         '--dry-run', default=False, action='store_true', dest='dry_run',
         help='Don\'t upload, stop after query engine.', required=False

@@ -1,15 +1,29 @@
 #!/usr/bin/python
 """Methods for the sub commands to run."""
 from __future__ import absolute_import
+import logging
 from ConfigParser import ConfigParser
 from getpass import getuser
 from os import environ
 from os.path import isfile
+from uploader.Uploader import LOGGER as UP_LOGGER
+from uploader.metadata.PolicyQuery import LOGGER as PQ_LOGGER
 from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth
 from .query import query_main
 from .upload import upload_main
 from .utils import system_config_path, user_config_path
+
+
+logging.basicConfig()
+LOGGER = logging.getLogger(__name__)
+
+
+def set_verbose(verbose):
+    """Set the log level to arg value."""
+    UP_LOGGER.setLevel(verbose.upper())
+    PQ_LOGGER.setLevel(verbose.upper())
+    LOGGER.setLevel(verbose.upper())
 
 
 def save_user_config(global_ini):
@@ -42,6 +56,8 @@ def generate_global_config():
     global_ini.set('authentication', 'password', None)
     global_ini.set('authentication', 'cert', None)
     global_ini.set('authentication', 'key', None)
+    LOGGER.debug('System Config: %s', system_config)
+    LOGGER.debug('User Config: %s', user_config)
     if isfile(system_config):
         global_ini.read(system_config)
     if isfile(user_config):
@@ -81,6 +97,7 @@ def upload(args, interface_data):
 
 def query(args, interface_data):
     """Query from the metadata configuration."""
+    set_verbose(args.verbose)
     global_ini = generate_global_config()
     auth = generate_requests_auth(global_ini)
     user_name = getattr(args, 'logon', None)
