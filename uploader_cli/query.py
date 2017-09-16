@@ -138,7 +138,7 @@ def filter_results(md_update, query_obj, regex):
     print filtered_results
     md_update[query_obj.metaID] = query_obj._replace(query_results=filtered_results)
     valid_ids, display_data = format_query_results(md_update, query_obj)
-    if query_obj.value not in valid_ids:
+    if valid_ids and query_obj.value not in valid_ids:
         md_update[query_obj.metaID] = query_obj._replace(value=filtered_results[0]['_id'])
 
 
