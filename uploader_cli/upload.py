@@ -17,27 +17,32 @@ BLOCK_SIZE = 1024 * 1024
 LOGGER = logging.getLogger(__name__)
 
 
+def generate_names_from_dir(dirpath, followlinks):
+    """Generate a file list from a dirpath."""
+    ret = []
+    for root, _dirs, files in walk(dirpath, followlinks=followlinks):
+        for fname in files:
+            name = join(root, fname)
+            ret.append(name)
+    return ret
+
+
 def upload_files_from_args(file_list, followlinks):
     """Generate a files structure required by bundler."""
     ret = []
     for path in file_list:
         if isdir(path):
-            for root, _dirs, files in walk(path, followlinks=followlinks):
-                for fname in files:
-                    name = join(root, fname)
-                    ret.append({
-                        'name': 'data/{}'.format(name),
-                        'size': stat(name).st_size,
-                        'mtime': stat(name).st_mtime,
-                        'fileobj': open(name, 'rb')
-                    })
+            ret.extend(generate_names_from_dir(path, followlinks))
         elif isfile(path):
-            ret.append({
-                'name': 'data/{}'.format(path),
-                'size': stat(path).st_size,
-                'mtime': stat(path).st_mtime,
-                'fileobj': open(path, 'rb')
-            })
+            ret.append(path)
+    data_struct = []
+    for path in ret:
+        data_struct.append({
+            'name': 'data/{}'.format(path),
+            'size': stat(path).st_size,
+            'mtime': stat(path).st_mtime,
+            'fileobj': open(path, 'rb')
+        })
     return ret
 
 
@@ -139,11 +144,8 @@ def get_size_of_tar_in_tar(md_update, args, tar_size):
     return length
 
 
-def upload_main(md_update, args):
-    """Main upload method."""
-    if args.dry_run:
-        return
-    LOGGER.debug('Starting Upload.')
+def determine_sizes(md_update, args):
+    """Return the sizes of the tar, tar_in_tar and overall content length."""
     tar_size = get_size_of_tar(deepcopy(md_update), args)
     tar_in_tar_size = 0
     content_length = tar_size
@@ -151,7 +153,12 @@ def upload_main(md_update, args):
     if args.tarintar:
         tar_in_tar_size = get_size_of_tar_in_tar(deepcopy(md_update), args, tar_size)
         content_length = tar_in_tar_size
-    LOGGER.debug('Size of tar %s tar_in_tar %s', tar_size, tar_in_tar_size)
+    return content_length, tar_size, tar_in_tar_size
+
+
+def perform_upload(md_update, args, content_length, tar_size):
+    """Setup threads and perform the upload."""
+    LOGGER.debug('Starting Upload.')
     wthreads = []
     rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(md_update), tar_size), tar_in_tar, wthreads, args.tarintar)
     rfd, wfd = setup_chain_thread((rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
@@ -163,6 +170,11 @@ def upload_main(md_update, args):
         wthread.join()
     LOGGER.debug('Threads completd')
     rfd.close()
+    return jobid, up_obj
+
+
+def wait_for_upload(args, jobid, up_obj):
+    """Wait (or not) for the jobid to complete the ingest process."""
     if not args.wait:
         print('Not Waiting Job ID ({})'.format(jobid))
         return 0
@@ -172,6 +184,17 @@ def upload_main(md_update, args):
         sleep(1)
         status = up_obj.getstate(jobid)
     print('Done.')
+    return status
+
+
+def upload_main(md_update, args):
+    """Main upload method."""
+    if args.dry_run:
+        return
+    content_length, tar_size, tar_in_tar_size = determine_sizes(md_update, args)
+    LOGGER.debug('Size of tar %s tar_in_tar %s', tar_size, tar_in_tar_size)
+    jobid, up_obj = perform_upload(md_update, args, content_length, tar_size)
+    status = wait_for_upload(args, jobid, up_obj)
     print(dumps(status, sort_keys=True, indent=4, separators=(',', ': ')))
     return 0
 
