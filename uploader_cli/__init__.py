@@ -53,8 +53,8 @@ def main():
         help='Enable verbose logging.', required=False
     )
     upload_parser.add_argument(
-        '--follow-symlinks', default=False, action='store_true', dest='followsymlinks',
-        help='Follow symlinks to directories when bundling.', required=False
+        '--follow-links', default=False, action='store_true', dest='followlinks',
+        help='Follow links to directories when bundling.', required=False
     )
     upload_parser.add_argument(
         '--nowait', default=True, action='store_false', dest='wait',
