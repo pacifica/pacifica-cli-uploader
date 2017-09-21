@@ -12,6 +12,7 @@ from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth
 from .query import query_main
 from .upload import upload_main
+from .upload import LOGGER as UPC_LOGGER
 from .utils import system_config_path, user_config_path
 
 
@@ -23,6 +24,7 @@ def set_verbose(verbose):
     """Set the log level to arg value."""
     UP_LOGGER.setLevel(verbose.upper())
     PQ_LOGGER.setLevel(verbose.upper())
+    UPC_LOGGER.setLevel(verbose.upper())
     LOGGER.setLevel(verbose.upper())
 
 
@@ -92,7 +94,7 @@ def generate_requests_auth(global_ini):
 def upload(args, interface_data):
     """Upload the data based on bits."""
     md_update = query(args, interface_data)
-    upload_main(md_update, args)
+    return upload_main(md_update, args)
 
 
 def query(args, interface_data):

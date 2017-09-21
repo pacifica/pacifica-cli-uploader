@@ -126,16 +126,13 @@ def set_results(md_update, query_obj, default_id, interactive=False):
 
 def filter_results(md_update, query_obj, regex):
     """Filter the results of query_obj by regex and save result back into md_update."""
-    print regex
     reg_engine = re.compile(regex, re.UNICODE)
     _valid_ids, display_data = format_query_results(md_update, query_obj)
     filtered_results = []
     for index in range(len(query_obj.query_results)):
         res = query_obj.query_results[index]
-        print display_data[unicode(res['_id'])]
         if reg_engine.search(display_data[unicode(res['_id'])]):
             filtered_results.append(query_obj.query_results[index])
-    print filtered_results
     md_update[query_obj.metaID] = query_obj._replace(query_results=filtered_results)
     valid_ids, display_data = format_query_results(md_update, query_obj)
     if valid_ids and query_obj.value not in valid_ids:
@@ -161,5 +158,4 @@ def query_main(md_update, args):
         )
         if not md_update[query_obj.metaID].value:
             raise RuntimeError(u'Could not find value for {}'.format(query_obj.metaID))
-    print [(obj.metaID, obj.value) for obj in md_update]
     return md_update

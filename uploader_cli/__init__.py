@@ -53,6 +53,26 @@ def main():
         help='Enable verbose logging.', required=False
     )
     upload_parser.add_argument(
+        '--follow-symlinks', default=False, action='store_true', dest='followsymlinks',
+        help='Follow symlinks to directories when bundling.', required=False
+    )
+    upload_parser.add_argument(
+        '--nowait', default=True, action='store_false', dest='wait',
+        help='Wait for the upload is accepted.', required=False
+    )
+    upload_parser.add_argument(
+        '--local-retry', dest='localretry',
+        help='Retry and upload from an existing bundle.', required=False
+    )
+    upload_parser.add_argument(
+        '--local-save', dest='localsave', metavar='FILE',
+        help='Save the upload bundle to FILE.', required=False
+    )
+    upload_parser.add_argument(
+        '--tar-in-tar', default=False, action='store_true', dest='tarintar',
+        help='Create a tar before we upload.', required=False
+    )
+    upload_parser.add_argument(
         '--dry-run', default=False, action='store_true', dest='dry_run',
         help='Don\'t upload, stop after query engine.', required=False
     )
