@@ -46,7 +46,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbo
 ############################
 # Upload commands
 ############################
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --logon 10 --instrument 54 --proposal 1234a --user-of-record 11 file.txt
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --logon 10 --instrument 54 --proposal 1234a --user-of-record 11 README.md
 
 ############################
 # PyTest coverage
