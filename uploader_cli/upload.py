@@ -43,7 +43,7 @@ def upload_files_from_args(file_list, followlinks):
             'mtime': stat(path).st_mtime,
             'fileobj': open(path, 'rb')
         })
-    return ret
+    return data_struct
 
 
 def check_okay(status):
