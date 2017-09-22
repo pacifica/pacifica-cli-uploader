@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """Methods for the sub commands to run."""
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import logging
 from ConfigParser import ConfigParser
 from getpass import getuser
@@ -65,7 +65,7 @@ def generate_global_config():
     if isfile(user_config):
         global_ini.read(user_config)
     else:
-        print 'Generating New Configuration.'
+        print('Generating New Configuration.')
     save_user_config(global_ini)
     set_environment_vars(global_ini)
     return global_ini

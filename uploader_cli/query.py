@@ -117,7 +117,7 @@ def set_results(md_update, query_obj, default_id, interactive=False):
     if interactive:
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
     else:
-        print u'Setting {} to {}.'.format(query_obj.metaID, default_id)
+        print u'Setting {} to {}.'.format(query_obj.metaID, default_id).encode('utf-8')
         selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
         new_obj = query_obj._replace(value=selected_id)

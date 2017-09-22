@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """Methods for configuring the client."""
+from __future__ import print_function
 from sys import stdin, stdout
 
 __all__ = ['configure_url_endpoints', 'configure_auth']
@@ -7,12 +8,12 @@ __all__ = ['configure_url_endpoints', 'configure_auth']
 
 def configure_url_endpoints(global_ini):
     """Query and set the URL endpoints."""
-    print """
+    print("""
 Endpoints are an HTTP URL that looks similar to a website but
 are designed for an uploader to interact with.
 
 What are the endpoint URLs for the following...
-"""
+""")
     for endpnt in ['upload', 'status', 'policy']:
         default_url = global_ini.get('endpoints', '{}_url'.format(endpnt))
         stdout.write('{} URL ({}): '.format(endpnt.capitalize(), default_url))
@@ -43,13 +44,13 @@ def configure_basic_auth(global_ini):
 
 def configure_auth(global_ini):
     """Query and set the authentication configuration."""
-    print """
+    print("""
 There are three kinds of authentication types supported.
 
 - clientssl - This is where you have an SSL client key and cert
 - basic     - This is a username and password
 - None      - Do not perform any authentication
-"""
+""")
     default_auth_type = global_ini.get('authentication', 'type')
     stdout.write('Authentication Type ({}): '.format(default_auth_type))
     strip_input = stdin.readline().strip()
