@@ -46,7 +46,10 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbo
 ############################
 # Upload commands
 ############################
-coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --instrument 54 --proposal 1234a README.md
+curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=10' -d'{ "network_id": "'`whoami`'"}'
+curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -d'{ "network_id": "someoneelse"}'
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload README.md
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload travis
 
 ############################
 # PyTest coverage
