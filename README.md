@@ -11,6 +11,12 @@ Python CLI Uploader for Pacifica Core Services. This uploader wraps the
 library for Windows or Linux command line.
 
 
+## CLIUploader
+
+This is the main executable program it consists of a main program from
+`uploader_cli` module. Users should be able to access the program from
+the bin or scripts directories in their python environment.
+
 ## Configure Sub-Command
 
 The `configure` subcommand generates a local configuration file for the
