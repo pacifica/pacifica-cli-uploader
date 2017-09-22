@@ -53,6 +53,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbo
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --tar-in-tar README.md
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-save retry.tar README.md
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-retry retry.tar
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --nowait README.md
 
 ############################
 # PyTest coverage
