@@ -50,6 +50,9 @@ curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=10' -
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -d'{ "network_id": "someoneelse"}'
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload README.md
 coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload travis
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --tar-in-tar README.md
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-save retry.tar README.md
+coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-retry retry.tar
 
 ############################
 # PyTest coverage
