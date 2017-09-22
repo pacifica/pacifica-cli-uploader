@@ -106,7 +106,7 @@ def setup_chain_thread(pipes, args, func, wthreads, doit):
         wthreads.append(wthread)
         LOGGER.debug('Done with creating worker thread.')
         return crfd, wfd
-    return rfd, wfd
+    return pipes
 
 
 def get_size_of_tar(md_update, args):
