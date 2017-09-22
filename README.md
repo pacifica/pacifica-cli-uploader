@@ -39,3 +39,42 @@ be read from
 [here](https://github.com/pacifica/pacifica-python-uploader/blob/master/METADATA_CONFIGURATION.md).
 
 ## Upload Sub-Command
+
+There are two sets of options to the upload sub-command. The first comes
+from the missing values in the metadata configuration json file. The
+second are common for all uploads and will be documented further.
+
+### `--follow-links`
+
+This will follow symlinked directories as you walk a directory tree
+building the list of files to upload.
+
+### `--nowait`
+
+The uploader will not wait for the successful or failed ingest of the
+upload. Instead you will have to query for this information later.
+
+### `--local-retry`
+
+Upload an already generated bundle by the `--local-save` option. This
+option will honor the `--local-save` and `--tar-in-tar` options as
+well.
+
+### `--local-save`
+
+The uploader will save off a copy of the uploaded bundle of data. The
+path is defined as the argument to the option.
+
+### `--tar-in-tar`
+
+A second bundler will be running generating a TAR in a TAR for upload.
+
+### `--dry-run`
+
+Do just the query portion of the upload and print off what the metadata
+will be set to. This will not upload or generate a local save or retry.
+
+### `--interactive`
+
+Interact with the results of the query engine to manually select the
+values for each metadata entry requested.
