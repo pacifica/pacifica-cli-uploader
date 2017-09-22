@@ -36,6 +36,6 @@ system level or changed on the command line by the `--config` option.
 
 The contents of the metadata configuration file is complex and should
 be read from
-[here](pacifica-python-uploader/blob/master/METADATA_CONFIGURATION.md).
+[here](https://github.com/pacifica/pacifica-python-uploader/blob/master/METADATA_CONFIGURATION.md).
 
 ## Upload Sub-Command
