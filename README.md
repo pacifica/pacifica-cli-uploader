@@ -10,6 +10,13 @@ Python CLI Uploader for Pacifica Core Services. This uploader wraps the
 [Pacifica Python Uploader](https://github.com/pacifica-python-uploader)
 library for Windows or Linux command line.
 
+## Installation
+
+To install the CLI uploader set up your python environment and then use
+pip to install.
+
+`pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=PacificaCLIUploader`
+
 
 ## CLIUploader
 
