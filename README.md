@@ -15,8 +15,10 @@ library for Windows or Linux command line.
 To install the CLI uploader set up your python environment and then use
 pip to install.
 
-`pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader`
-`pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=PacificaCLIUploader`
+```
+pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
+pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=PacificaCLIUploader
+```
 
 ## CLIUploader
 
