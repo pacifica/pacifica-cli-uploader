@@ -7,7 +7,7 @@
 
 
 Python CLI Uploader for Pacifica Core Services. This uploader wraps the
-[Pacifica Python Uploader](https://github.com/pacifica-python-uploader)
+[Pacifica Python Uploader](https://github.com/pacifica/pacifica-python-uploader)
 library for Windows or Linux command line.
 
 ## Installation
@@ -15,8 +15,8 @@ library for Windows or Linux command line.
 To install the CLI uploader set up your python environment and then use
 pip to install.
 
+`pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader`
 `pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=PacificaCLIUploader`
-
 
 ## CLIUploader
 
@@ -50,6 +50,32 @@ system level or changed on the command line by the `--config` option.
 The contents of the metadata configuration file is complex and should
 be read from
 [here](https://github.com/pacifica/pacifica-python-uploader/blob/master/METADATA_CONFIGURATION.md).
+
+### Example Interaction
+
+```
+$ CLIUploader configure
+Generating New Configuration.
+
+Endpoints are an HTTP URL that looks similar to a website but
+are designed for an uploader to interact with.
+
+What are the endpoint URLs for the following...
+
+Upload URL (https://ingest.example.com/upload):
+Status URL (https://ingest.example.com/get_state):
+Policy URL (https://policy.example.com/uploader):
+
+There are three kinds of authentication types supported.
+
+- clientssl - This is where you have an SSL client key and cert
+- basic     - This is a username and password
+- None      - Do not perform any authentication
+
+Authentication Type (None): basic
+Username (None): jdoe
+Password (None): password
+```
 
 ## Upload Sub-Command
 
@@ -91,3 +117,38 @@ will be set to. This will not upload or generate a local save or retry.
 
 Interact with the results of the query engine to manually select the
 values for each metadata entry requested.
+
+### Example Interaction
+
+```
+$ CLIUploader upload --interactive config.cfg
+
+Instrument ID - Select an ID
+=====================================
+
+54 Nittany Liquid Probes - NMR PROBES: Nittany Liquid Probes
+104 Transmogriscope - Nanoscale Transmogriscope
+Select ID (54): 54
+
+Proposal ID - Select an ID
+=====================================
+
+1234a - Pacifica Development (active no close)
+1235 - Pacifica Development (no close or end)
+1236e - Pacifica Development (expired closed and end)
+1237 - Pacifica Development (expired closed no end)
+1238 - Pacifica Development (pre-active)
+Select ID (1234a): 1234a
+Done 10240.
+Waiting job to complete (1).
+Done.
+{
+    "created": "2017-09-26 01:32:34",
+    "exception": "",
+    "job_id": 1,
+    "state": "OK",
+    "task": "ingest metadata",
+    "task_percent": "100.00000",
+    "updated": "2017-09-26 01:32:36"
+}
+```
