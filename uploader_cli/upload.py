@@ -27,7 +27,7 @@ def generate_names_from_dir(dirpath, followlinks):
     return ret
 
 
-def upload_files_from_args(file_list, followlinks):
+def upload_files_from_args(file_list, followlinks, prefix):
     """Generate a files structure required by bundler."""
     ret = []
     for path in file_list:
@@ -37,8 +37,11 @@ def upload_files_from_args(file_list, followlinks):
             ret.append(path)
     data_struct = []
     for path in ret:
+        arcpath = path
+        if prefix:
+            arcpath = '{}/{}'.format(prefix, path)
         data_struct.append({
-            'name': 'data/{}'.format(path),
+            'name': 'data/{}'.format(arcpath),
             'size': stat(path).st_size,
             'mtime': stat(path).st_mtime,
             'fileobj': open(path, 'rb')
@@ -163,7 +166,7 @@ def perform_upload(md_update, args, content_length, tar_size):
     rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(md_update), tar_size), tar_in_tar, wthreads, args.tarintar)
     rfd, wfd = setup_chain_thread((rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
     setup_bundler(wfd, md_update, args, wthreads)
-    up_obj = Uploader()
+    up_obj = Uploader(auth=md_update.get_auth())
     LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s', rfd, wfd, len(wthreads), content_length)
     jobid = up_obj.upload(rfd, content_length=content_length)
     for wthread in wthreads:
@@ -219,7 +222,7 @@ def setup_bundler(wfd, md_update, args, wthreads):
 
     def make_bundle():
         """Make the bundler out of files on cmdline."""
-        upload_files = upload_files_from_args(args.files, args.followlinks)
+        upload_files = upload_files_from_args(args.files, args.followlinks, md_update.directory_prefix())
         LOGGER.debug(upload_files)
         LOGGER.debug(md_update)
         bundle = bundler.Bundler(md_update, upload_files)

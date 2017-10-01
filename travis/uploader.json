@@ -66,5 +66,21 @@
     "sourceTable": "users",
     "value": "",
     "valueField": "_id"
+  },
+  {
+    "destinationTable": "NothingReally",
+    "directoryOrder": 0,
+    "displayFormat": "Proposal ID {_id}",
+    "displayType": "directoryTree",
+    "metaID": "directory-proposal",
+    "queryDependency": {
+      "_id": "proposal"
+    },
+    "queryFields": [
+      "_id"
+    ],
+    "sourceTable": "proposals",
+    "value": "",
+    "valueField": "_id"
   }
 ]

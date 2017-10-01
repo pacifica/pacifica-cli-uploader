@@ -36,9 +36,9 @@ def save_user_config(global_ini):
 
 def set_environment_vars(global_ini):
     """Set some environment variables to be used later."""
-    for var in ['upload_url', 'status_url', 'policy_url']:
-        value = global_ini.get('endpoints', var)
-        environ[var.upper()] = value
+    environ['POLICY_URL'] = global_ini.get('endpoints', 'policy_url')
+    environ['INGEST_UPLOAD_URL'] = global_ini.get('endpoints', 'upload_url')
+    environ['INGEST_STATUS_URL'] = global_ini.get('endpoints', 'status_url')
 
 
 def generate_global_config():
