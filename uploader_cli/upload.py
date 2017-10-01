@@ -173,7 +173,22 @@ def perform_upload(md_update, args, content_length, tar_size):
     setup_bundler(wfd, md_update, args, wthreads)
     up_obj = Uploader(auth=md_update.get_auth())
     LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s', rfd, wfd, len(wthreads), content_length)
-    jobid = up_obj.upload(rfd, content_length=content_length)
+
+    # pylint: disable=too-few-public-methods
+    class FakeFileObj(object):
+        """Fake out the file object."""
+
+        def __init__(self, rfd, rfd_len):
+            """Constructor for fake streaming obj."""
+            self.len = rfd_len
+            self.rfd = rfd
+
+        def read(self, size=-1):
+            """Read from the rfd size amount."""
+            return self.rfd.read(size)
+    # pylint: enable=too-few-public-methods
+
+    jobid = up_obj.upload(FakeFileObj(rfd, content_length), content_length=content_length)
     for wthread in wthreads:
         wthread.join()
     LOGGER.debug('Threads completd')
