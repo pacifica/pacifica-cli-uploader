@@ -27,16 +27,21 @@ def generate_names_from_dir(dirpath, followlinks):
     return ret
 
 
-def upload_files_from_args(file_list, followlinks, prefix):
-    """Generate a files structure required by bundler."""
+def build_file_list_from_args(file_list, followlinks):
+    """Build a file list from args passed on cmdline."""
     ret = []
     for path in file_list:
         if isdir(path):
             ret.extend(generate_names_from_dir(path, followlinks))
         elif isfile(path):
             ret.append(path)
+    return ret
+
+
+def upload_files_from_args(file_list, followlinks, prefix):
+    """Generate a files structure required by bundler."""
     data_struct = []
-    for path in ret:
+    for path in build_file_list_from_args(file_list, followlinks):
         arcpath = path
         if prefix:
             arcpath = '{}/{}'.format(prefix, path)
