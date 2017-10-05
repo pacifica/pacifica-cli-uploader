@@ -25,7 +25,7 @@ coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configu
 ############################
 # Build testing config
 ############################
-printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nNone\n' |
+printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' |
 python CLIUploader.py configure
 
 ############################
