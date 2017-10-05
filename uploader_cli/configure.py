@@ -3,7 +3,11 @@
 from __future__ import print_function
 from sys import stdin, stdout
 
-__all__ = ['configure_url_endpoints', 'configure_ca_bundle', 'configure_auth']
+__all__ = [
+    'configure_url_endpoints',
+    'configure_ca_bundle',
+    'configure_auth'
+]
 
 
 def configure_url_endpoints(global_ini):
