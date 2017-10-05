@@ -15,6 +15,8 @@ class config_client(object):
     def __enter__(self):
         """Create a config parser object with appropriate values."""
         config = ConfigParser()
+        config.add_section('endpoints')
+        config.set('endpoints', 'ca_bundle', 'True')
         config.add_section('authentication')
         config.set('authentication', 'type', self.auth_type)
         config.set('authentication', 'username', 'username')
