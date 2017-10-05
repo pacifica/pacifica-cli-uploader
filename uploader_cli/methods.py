@@ -9,7 +9,7 @@ from os.path import isfile
 from uploader.Uploader import LOGGER as UP_LOGGER
 from uploader.metadata.PolicyQuery import LOGGER as PQ_LOGGER
 from uploader.metadata import MetaUpdate
-from .configure import configure_url_endpoints, configure_auth
+from .configure import configure_url_endpoints, configure_auth, configure_ca_bundle
 from .query import query_main
 from .upload import upload_main
 from .upload import LOGGER as UPC_LOGGER
@@ -52,6 +52,7 @@ def generate_global_config():
     global_ini.set('endpoints', 'upload_url', 'https://ingest.example.com/upload')
     global_ini.set('endpoints', 'status_url', 'https://ingest.example.com/get_state')
     global_ini.set('endpoints', 'policy_url', 'https://policy.example.com/uploader')
+    global_ini.set('endpoints', 'ca_bundle', 'True')
     global_ini.add_section('authentication')
     global_ini.set('authentication', 'type', None)
     global_ini.set('authentication', 'username', None)
@@ -71,24 +72,40 @@ def generate_global_config():
     return global_ini
 
 
+def verify_type(obj):
+    """
+    Convert obj to requests verify argument.
+
+    Verify the type of obj that it will be consumed by requests
+    verify option correctly.
+    """
+    if obj in ['True', 'False']:
+        return obj == 'True'
+    if isfile(str(obj)):
+        return str(obj)
+    raise ValueError('{} is not a valid bool or file.'.format(obj))
+
+
 def generate_requests_auth(global_ini):
     """Generate arguments to requests for authentication."""
     auth_type = global_ini.get('authentication', 'type')
+    ret = {}
     if auth_type == 'clientssl':
-        return {
+        ret = {
             'cert': (
                 global_ini.get('authentication', 'cert'),
                 global_ini.get('authentication', 'key')
             )
         }
     elif auth_type == 'basic':
-        return {
+        ret = {
             'auth': (
                 global_ini.get('authentication', 'username'),
                 global_ini.get('authentication', 'password')
             )
         }
-    return {}
+    ret['verify'] = verify_type(global_ini.get('endpoints', 'ca_bundle'))
+    return ret
 
 
 def upload(args, interface_data):
@@ -114,5 +131,6 @@ def configure(_args, _config_data):
     """Configure the client by parsing current configuration."""
     global_ini = generate_global_config()
     configure_url_endpoints(global_ini)
+    configure_ca_bundle(global_ini)
     configure_auth(global_ini)
     save_user_config(global_ini)

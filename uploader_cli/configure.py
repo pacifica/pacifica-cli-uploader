@@ -3,7 +3,7 @@
 from __future__ import print_function
 from sys import stdin, stdout
 
-__all__ = ['configure_url_endpoints', 'configure_auth']
+__all__ = ['configure_url_endpoints', 'configure_ca_bundle', 'configure_auth']
 
 
 def configure_url_endpoints(global_ini):
@@ -20,6 +20,25 @@ What are the endpoint URLs for the following...
         strip_input = stdin.readline().strip()
         if strip_input:
             global_ini.set('endpoints', '{}_url'.format(endpnt), strip_input)
+
+
+def configure_ca_bundle(global_ini):
+    """Query for the ca bundle when using https."""
+    default_verify = global_ini.get('endpoints', 'ca_bundle')
+    print("""
+CA certificate bundle is the path to your certificate authority bundle.
+
+Use this if you have a custom site SSL Certificate for your Site.
+
+Valid values:
+ - True: verify the SSL server certificiate using system bundle
+ - False: do not verify the SSL server certificate (not recommended)
+ - a/path/to/a/cacert/bundle: custom path to the server certificate
+""")
+    stdout.write('CA Certificate Bundle ({}): '.format(default_verify))
+    strip_input = stdin.readline().strip()
+    if strip_input:
+        global_ini.set('endpoints', 'ca_bundle', strip_input)
 
 
 def configure_client_ssl(global_ini):
