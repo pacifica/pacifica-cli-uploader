@@ -2,7 +2,7 @@
 """Test the methods module for things we need to test."""
 from unittest import TestCase
 from ConfigParser import ConfigParser
-from uploader_cli.methods import generate_requests_auth
+from uploader_cli.methods import generate_requests_auth, verify_type
 
 
 class config_client(object):
@@ -45,3 +45,15 @@ class TestMethods(TestCase):
             self.assertTrue('auth' in generate_requests_auth(conf))
             self.assertTrue(generate_requests_auth(conf)['auth'][0], 'username')
             self.assertTrue(generate_requests_auth(conf)['auth'], 'password')
+
+    def test_verify_type(self):
+        """Test the verify_type method to cover everything."""
+        self.assertEqual(verify_type('True'), True)
+        self.assertEqual(verify_type('False'), False)
+        self.assertEqual(verify_type('/etc/hosts'), '/etc/hosts')
+        hit_exception = False
+        try:
+            verify_type('blarg')
+        except ValueError:
+            hit_exception = True
+        self.assertTrue(hit_exception)
