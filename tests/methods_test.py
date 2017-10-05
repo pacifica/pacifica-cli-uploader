@@ -40,6 +40,7 @@ class TestMethods(TestCase):
             self.assertTrue('cert' in generate_requests_auth(conf))
             self.assertEqual(generate_requests_auth(conf)['cert'][0], 'cert')
             self.assertTrue(generate_requests_auth(conf)['cert'][1], 'key')
+            self.assertTrue(generate_requests_auth(conf)['verify'], 'True')
         with config_client('basic') as conf:
             self.assertTrue('auth' in generate_requests_auth(conf))
             self.assertTrue(generate_requests_auth(conf)['auth'][0], 'username')
