@@ -35,9 +35,9 @@ CA certificate bundle is the path to your certificate authority bundle.
 Use this if you have a custom site SSL Certificate for your Site.
 
 Valid values:
- - True: verify the SSL server certificiate using system bundle
- - False: do not verify the SSL server certificate (not recommended)
- - a/path/to/a/cacert/bundle: custom path to the server certificate
+- True: verify the SSL server certificiate using system bundle
+- False: do not verify the SSL server certificate (not recommended)
+- a/path/to/a/cacert/bundle: custom path to the server certificate
 """)
     stdout.write('CA Certificate Bundle ({}): '.format(default_verify))
     strip_input = stdin.readline().strip()

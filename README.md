@@ -68,6 +68,17 @@ Upload URL (https://ingest.example.com/upload):
 Status URL (https://ingest.example.com/get_state):
 Policy URL (https://policy.example.com/uploader):
 
+CA certificate bundle is the path to your certificate authority bundle.
+
+Use this if you have a custom site SSL Certificate for your Site.
+
+Valid values:
+- True: verify the SSL server certificiate using system bundle
+- False: do not verify the SSL server certificate (not recommended)
+- a/path/to/a/cacert/bundle: custom path to the server certificate
+
+CA Certificate Bundle (True):
+
 There are three kinds of authentication types supported.
 
 - clientssl - This is where you have an SSL client key and cert
