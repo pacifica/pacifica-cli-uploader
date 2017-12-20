@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """The CLI module contains all the logic needed to run a CLI."""
 import sys
 import argparse
@@ -15,11 +16,11 @@ def mangle_config_argument(argv):
     starts_argv = [arg[:len_arg] for arg in argv]
     if config_arg in starts_argv:
         if config_arg in argv:
-            config_file = argv[argv.index(config_arg)+1]
-            del argv[argv.index(config_arg)+1]
+            config_file = argv[argv.index(config_arg) + 1]
+            del argv[argv.index(config_arg) + 1]
             del argv[argv.index(config_arg)]
         else:
-            config_file = argv[starts_argv.index(config_arg)][len_arg+1:]
+            config_file = argv[starts_argv.index(config_arg)][len_arg + 1:]
             del argv[starts_argv.index(config_arg)]
         return (config_file, argv)
     return (None, argv)
@@ -29,10 +30,13 @@ def main():
     """Main method to deal with command line argument parsing."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='sub-command help')
-    upload_parser = subparsers.add_parser('upload', help='upload help', description='perform upload')
-    config_parser = subparsers.add_parser('configure', help='configure help', description='setup configuration')
+    upload_parser = subparsers.add_parser(
+        'upload', help='upload help', description='perform upload')
+    config_parser = subparsers.add_parser(
+        'configure', help='configure help', description='setup configuration')
 
-    default_config = getenv('UPLOADER_CONFIG', system_config_path('uploader.json'))
+    default_config = getenv(
+        'UPLOADER_CONFIG', system_config_path('uploader.json'))
     config_file, argv = mangle_config_argument(sys.argv)
     if not config_file:
         config_file = default_config
@@ -42,10 +46,12 @@ def main():
             upload_parser.add_argument(
                 '--{}-regex'.format(config_part.metaID), required=False,
                 dest='{}_regex'.format(config_part.metaID),
-                help='{} regular expression match.'.format(config_part.displayTitle)
+                help='{} regular expression match.'.format(
+                    config_part.displayTitle)
             )
             upload_parser.add_argument(
-                '--{}'.format(config_part.metaID), '-{}'.format(config_part.metaID[0]),
+                '--{}'.format(config_part.metaID), '-{}'.format(
+                    config_part.metaID[0]),
                 help=config_part.displayTitle, required=False
             )
     parser.add_argument(

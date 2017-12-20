@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """The upload module used to send the data to ingest."""
 from __future__ import print_function
 from threading import Thread
@@ -140,7 +141,8 @@ def get_size_of_tar_in_tar(md_update, args, tar_size):
     stdout.write('Determining size of tar in tar: ')
     length = 0
     wthreads = []
-    rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(md_update), tar_size), tar_in_tar, wthreads, True)
+    rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(
+        md_update), tar_size), tar_in_tar, wthreads, True)
     setup_bundler(wfd, md_update, args, wthreads)
     buf = 'blarg'
     while buf:
@@ -157,9 +159,11 @@ def determine_sizes(md_update, args):
     tar_size = get_size_of_tar(deepcopy(md_update), args)
     tar_in_tar_size = 0
     content_length = tar_size
-    LOGGER.debug('Size of tar %s tar_in_tar %s', md_update, deepcopy(md_update))
+    LOGGER.debug('Size of tar %s tar_in_tar %s',
+                 md_update, deepcopy(md_update))
     if args.tarintar:
-        tar_in_tar_size = get_size_of_tar_in_tar(deepcopy(md_update), args, tar_size)
+        tar_in_tar_size = get_size_of_tar_in_tar(
+            deepcopy(md_update), args, tar_size)
         content_length = tar_in_tar_size
     return content_length, tar_size, tar_in_tar_size
 
@@ -168,11 +172,14 @@ def perform_upload(md_update, args, content_length, tar_size):
     """Setup threads and perform the upload."""
     LOGGER.debug('Starting Upload.')
     wthreads = []
-    rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(md_update), tar_size), tar_in_tar, wthreads, args.tarintar)
-    rfd, wfd = setup_chain_thread((rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
+    rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(
+        md_update), tar_size), tar_in_tar, wthreads, args.tarintar)
+    rfd, wfd = setup_chain_thread(
+        (rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
     setup_bundler(wfd, md_update, args, wthreads)
     up_obj = Uploader(auth=md_update.get_auth())
-    LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s', rfd, wfd, len(wthreads), content_length)
+    LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s',
+                 rfd, wfd, len(wthreads), content_length)
 
     # pylint: disable=too-few-public-methods
     class FakeFileObj(object):
@@ -188,7 +195,8 @@ def perform_upload(md_update, args, content_length, tar_size):
             return self.rfd.read(size)
     # pylint: enable=too-few-public-methods
 
-    jobid = up_obj.upload(FakeFileObj(rfd, content_length), content_length=content_length)
+    jobid = up_obj.upload(FakeFileObj(rfd, content_length),
+                          content_length=content_length)
     for wthread in wthreads:
         wthread.join()
     LOGGER.debug('Threads completd')
@@ -213,8 +221,9 @@ def wait_for_upload(args, jobid, up_obj):
 def upload_main(md_update, args):
     """Main upload method."""
     if args.dry_run:
-        return
-    content_length, tar_size, tar_in_tar_size = determine_sizes(md_update, args)
+        return None
+    content_length, tar_size, tar_in_tar_size = determine_sizes(
+        md_update, args)
     LOGGER.debug('Size of tar %s tar_in_tar %s', tar_size, tar_in_tar_size)
     jobid, up_obj = perform_upload(md_update, args, content_length, tar_size)
     status = wait_for_upload(args, jobid, up_obj)
@@ -242,13 +251,15 @@ def setup_bundler(wfd, md_update, args, wthreads):
 
     def make_bundle():
         """Make the bundler out of files on cmdline."""
-        upload_files = upload_files_from_args(args.files, args.followlinks, md_update.directory_prefix())
+        upload_files = upload_files_from_args(
+            args.files, args.followlinks, md_update.directory_prefix())
         LOGGER.debug(upload_files)
         LOGGER.debug(md_update)
         bundle = bundler.Bundler(md_update, upload_files)
         bundle.stream(
             wfd,
-            callback=lambda x: stdout.write('\r'+' '*80+'\r{:03.2f}%\r'.format(x*100)),
+            callback=lambda x: stdout.write(
+                '\r' + ' ' * 80 + '\r{:03.2f}%\r'.format(x * 100)),
             sleeptime=2
         )
         wfd.close()

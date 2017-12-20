@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """These are the query methods used for interactive query."""
 from sys import stdin, stdout, stderr
 from subprocess import Popen, PIPE
@@ -51,7 +52,8 @@ def format_query_results(md_update, query_obj):
     display_data = {}
     for obj in md_update[query_obj.metaID].query_results:
         valid_ids.append(unicode(obj['_id']))
-        display_data[unicode(obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
+        display_data[unicode(
+            obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     return (valid_ids, display_data)
 
 
@@ -93,9 +95,11 @@ def execute_pager(content):
         pager_full_path = parse_command(pager_exe[0])
         if pager_full_path:
             pager_exe[0] = pager_full_path
-            pager_proc = Popen(pager_exe, stdin=PIPE, stdout=stdout, stderr=stderr)
+            pager_proc = Popen(pager_exe, stdin=PIPE,
+                               stdout=stdout, stderr=stderr)
             pager_proc.communicate(u'\n'.join(content).encode('utf-8'))
             return pager_proc.wait()
+    return None
 
 
 def interactive_select_loop(md_update, query_obj, default_id):
@@ -105,7 +109,8 @@ def interactive_select_loop(md_update, query_obj, default_id):
     if len(valid_ids) == 1:
         return valid_ids[0]
     while not selected_id:
-        execute_pager(paged_content(query_obj.displayTitle, display_data, valid_ids))
+        execute_pager(paged_content(
+            query_obj.displayTitle, display_data, valid_ids))
         stdout.write(u'Select ID ({}): '.format(default_id))
         selected_id = stdin.readline().strip()
         selected_id = set_selected_id(selected_id, default_id, valid_ids)
@@ -133,10 +138,12 @@ def filter_results(md_update, query_obj, regex):
         res = query_obj.query_results[index]
         if reg_engine.search(display_data[unicode(res['_id'])]):
             filtered_results.append(query_obj.query_results[index])
-    md_update[query_obj.metaID] = query_obj._replace(query_results=filtered_results)
+    md_update[query_obj.metaID] = query_obj._replace(
+        query_results=filtered_results)
     valid_ids, display_data = format_query_results(md_update, query_obj)
     if valid_ids and query_obj.value not in valid_ids:
-        md_update[query_obj.metaID] = query_obj._replace(value=filtered_results[0]['_id'])
+        md_update[query_obj.metaID] = query_obj._replace(
+            value=filtered_results[0]['_id'])
 
 
 def query_main(md_update, args):
@@ -157,5 +164,6 @@ def query_main(md_update, args):
             args.interactive
         )
         if not md_update[query_obj.metaID].value:
-            raise RuntimeError(u'Could not find value for {}'.format(query_obj.metaID))
+            raise RuntimeError(
+                u'Could not find value for {}'.format(query_obj.metaID))
     return md_update

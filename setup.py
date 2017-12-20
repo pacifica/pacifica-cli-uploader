@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Setup and install the metadata."""
 from pip.req import parse_requirements
 from setuptools import setup

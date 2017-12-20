@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Methods for the sub commands to run."""
 from __future__ import absolute_import, print_function
 import logging
@@ -49,9 +50,12 @@ def generate_global_config():
     global_ini.add_section('globals')
     global_ini.set('globals', 'interactive', 'False')
     global_ini.add_section('endpoints')
-    global_ini.set('endpoints', 'upload_url', 'https://ingest.example.com/upload')
-    global_ini.set('endpoints', 'status_url', 'https://ingest.example.com/get_state')
-    global_ini.set('endpoints', 'policy_url', 'https://policy.example.com/uploader')
+    global_ini.set('endpoints', 'upload_url',
+                   'https://ingest.example.com/upload')
+    global_ini.set('endpoints', 'status_url',
+                   'https://ingest.example.com/get_state')
+    global_ini.set('endpoints', 'policy_url',
+                   'https://policy.example.com/uploader')
     global_ini.set('endpoints', 'ca_bundle', 'True')
     global_ini.add_section('authentication')
     global_ini.set('authentication', 'type', None)

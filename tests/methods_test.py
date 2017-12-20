@@ -1,16 +1,19 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Test the methods module for things we need to test."""
 from unittest import TestCase
 from ConfigParser import ConfigParser
 from uploader_cli.methods import generate_requests_auth, verify_type
 
 
-class config_client(object):
+# pylint: disable=too-few-public-methods
+class ConfigClient(object):
     """Class to generate sample config."""
 
     def __init__(self, auth_type):
         """Construct the config client stub object."""
         self.auth_type = auth_type
+        self.config = None
 
     def __enter__(self):
         """Create a config parser object with appropriate values."""
@@ -29,6 +32,7 @@ class config_client(object):
     def __exit__(self, exec_type, _exec_value, _exec_traceback):
         """Exit the code using the config parser."""
         return exec_type is None
+# pylint: enable=too-few-public-methods
 
 
 class TestMethods(TestCase):
@@ -36,14 +40,15 @@ class TestMethods(TestCase):
 
     def test_gen_req_auth(self):
         """Test the requests authentication generator."""
-        with config_client('clientssl') as conf:
+        with ConfigClient('clientssl') as conf:
             self.assertTrue('cert' in generate_requests_auth(conf))
             self.assertEqual(generate_requests_auth(conf)['cert'][0], 'cert')
             self.assertTrue(generate_requests_auth(conf)['cert'][1], 'key')
             self.assertTrue(generate_requests_auth(conf)['verify'], 'True')
-        with config_client('basic') as conf:
+        with ConfigClient('basic') as conf:
             self.assertTrue('auth' in generate_requests_auth(conf))
-            self.assertTrue(generate_requests_auth(conf)['auth'][0], 'username')
+            self.assertTrue(generate_requests_auth(conf)
+                            ['auth'][0], 'username')
             self.assertTrue(generate_requests_auth(conf)['auth'], 'password')
 
     def test_verify_type(self):

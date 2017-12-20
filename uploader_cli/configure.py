@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Methods for configuring the client."""
 from __future__ import print_function
 from sys import stdin, stdout
@@ -49,7 +50,8 @@ def configure_client_ssl(global_ini):
     """Query and set the client ssl key and cert."""
     for ssl_part in ['key', 'cert']:
         default_cfg = global_ini.get('authentication', ssl_part)
-        stdout.write('Client {} ({}): '.format(ssl_part.capitalize(), default_cfg))
+        stdout.write('Client {} ({}): '.format(
+            ssl_part.capitalize(), default_cfg))
         strip_input = stdin.readline().strip()
         if strip_input:
             global_ini.set('authentication', ssl_part, strip_input)

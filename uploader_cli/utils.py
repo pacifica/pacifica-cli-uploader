@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Utilities module for common methods."""
 import sys
 from os import makedirs, sep
