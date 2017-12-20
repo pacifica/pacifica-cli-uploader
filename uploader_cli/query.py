@@ -82,24 +82,29 @@ def parse_command(exe):
 
 def execute_pager(content):
     """Find the appropriate pager default is embedded python pager."""
+    pager_default = ['python', '-m', 'pager', '-']
     pager_exes = [
-        [getenv('PAGER', None)],
+        getenv('PAGER', 'more').split(),
         ['more'],
         ['less'],
-        ['most'],
-        ['python', '-m', 'pager', '-']
+        ['most']
     ]
     for pager_exe in pager_exes:
         if not pager_exe[0]:
             continue
         pager_full_path = parse_command(pager_exe[0])
         if pager_full_path:
-            pager_exe[0] = pager_full_path
-            pager_proc = Popen(pager_exe, stdin=PIPE,
-                               stdout=stdout, stderr=stderr)
-            pager_proc.communicate(u'\n'.join(content).encode('utf-8'))
-            return pager_proc.wait()
-    return None
+            pager_default = pager_exe
+            pager_default[0] = pager_full_path
+            break
+    pager_proc = Popen(
+        pager_default,
+        stdin=PIPE,
+        stdout=stdout,
+        stderr=stderr
+    )
+    pager_proc.communicate(u'\n'.join(content).encode('utf-8'))
+    return pager_proc.wait()
 
 
 def interactive_select_loop(md_update, query_obj, default_id):
