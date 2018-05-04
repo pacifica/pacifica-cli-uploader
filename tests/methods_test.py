@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 """Test the methods module for things we need to test."""
 from unittest import TestCase
-from ConfigParser import ConfigParser
+try:  # python 2 import
+    from ConfigParser import ConfigParser
+except ImportError:  # pragma: no cover python 3 import
+    from configparser import ConfigParser
 from uploader_cli.methods import generate_requests_auth, verify_type
 
 
