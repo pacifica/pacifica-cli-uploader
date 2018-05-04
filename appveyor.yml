@@ -29,8 +29,8 @@ services:
 before_test:
 - ps: >
     $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"; 
-    mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_ingest;
-    mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_uniqueid;
+    mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_ingest;
+    mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_uniqueid;
     createdb pacifica_metadata;
     mkdir C:\ingest;
     mkdir C:\archive;
