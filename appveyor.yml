@@ -28,7 +28,7 @@ services:
 
 before_test:
 - ps: >
-    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"; 
+    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}";
     mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_ingest;
     mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_uniqueid;
     createdb pacifica_metadata;
@@ -54,7 +54,7 @@ before_test:
 
 install:
 - ps: >
-    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"; 
+    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}";
     Invoke-WebRequest -Uri "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.5.zip" -OutFile "elasticsearch.zip";
     Expand-Archive "elasticsearch.zip" -DestinationPath "C:\elasticsearch";
     Start-Process C:\elasticsearch\elasticsearch-5.6.5\bin\elasticsearch;
