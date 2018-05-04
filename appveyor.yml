@@ -27,40 +27,51 @@ services:
   - postgresql
 
 before_test:
-  - SET PATH=%MYSQL_PATH%\bin;%PGSQL_PATH%\bin;%PATH%
-  - mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_ingest
-  - mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_uniqueid
-  - createdb pacifica_metadata
-  - mkdir C:\ingest
-  - mkdir C:\archive
-  - ps: nuget install redis-64 -excludeversion
-  - ps: redis-64\tools\redis-server.exe --service-install
-  - ps: redis-64\tools\redis-server.exe --service-start
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\ArchiveInterfaceServer.py --prefix C:\archive" -WorkingDirectory "travis/archivei"
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\UniqueIDServer.py" -WorkingDirectory "travis\uniqueid"
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\MetadataServer.py" -WorkingDirectory "travis\metadata"
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\IngestServer.py" -WorkingDirectory "travis\ingest"
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "-m celery -A ingest.backend worker --loglevel=info -P eventlet" -WorkingDirectory "travis\ingest"
-  - ps: Invoke-WebRequest https://github.com/pacifica/pacifica-metadata/archive/master.zip -OutFile pacifica-metadata.zip
-  - ps: Expand-Archive pacifica-metadata.zip -DestinationPath C:\pacifica-metadata
-  - ps: sleep 10
-  - ps: Invoke-WebRequest http://localhost:8121/users
-  - cd C:\pacifica-metadata\pacifica-metadata-master
-  - '%PYTHON%\python.exe -m test_files.loadit'
-  - cd C:\projects\pacifica-python-uploader
-  - ps: Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\PolicyServer.py" -WorkingDirectory "travis\policy"
-  - ps: Invoke-WebRequest http://localhost:8181/status/users/search/dmlb2001/simple -TimeoutSec 1800
+- ps: >
+    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"; 
+    mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_ingest;
+    mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_uniqueid;
+    createdb pacifica_metadata;
+    mkdir C:\ingest;
+    mkdir C:\archive;
+    nuget install redis-64 -excludeversion;
+    redis-64\tools\redis-server.exe --service-install;
+    redis-64\tools\redis-server.exe --service-start;
+    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\ArchiveInterfaceServer.py --prefix C:\archive" -WorkingDirectory "travis/archivei";
+    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\UniqueIDServer.py" -WorkingDirectory "travis\uniqueid";
+    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\MetadataServer.py" -WorkingDirectory "travis\metadata";
+    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\IngestServer.py" -WorkingDirectory "travis\ingest";
+    Start-Process $env:PYTHON\python.exe -ArgumentList "-m celery -A ingest.backend worker --loglevel=info -P eventlet" -WorkingDirectory "travis\ingest";
+    Invoke-WebRequest https://github.com/pacifica/pacifica-metadata/archive/master.zip -OutFile pacifica-metadata.zip;
+    Expand-Archive pacifica-metadata.zip -DestinationPath C:\pacifica-metadata;
+    sleep 10;
+    Invoke-WebRequest http://localhost:8121/users;
+    pushd C:\pacifica-metadata\pacifica-metadata-master;
+    & $env:PYTHON\python.exe -m test_files.loadit;
+    popd;
+    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\PolicyServer.py" -WorkingDirectory "travis\policy";
+    Invoke-WebRequest http://localhost:8181/status/users/search/dmlb2001/simple -TimeoutSec 1800;
 
 install:
-  - ps: 'Invoke-WebRequest -Uri "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.5.zip" -OutFile "elasticsearch.zip"'
-  - ps: 'Expand-Archive "elasticsearch.zip" -DestinationPath "C:\elasticsearch"'
-  - ps: 'Start-Process C:\elasticsearch\elasticsearch-5.6.5\bin\elasticsearch'
-  - '%PYTHON%\python.exe -m pip install pip setuptools wheel --upgrade'
-  - '%PYTHON%\python.exe -m pip install -r requirements-dev.txt'
-  - '%PYTHON%\python.exe -m pip install celery[redis] eventlet'
+- ps: >
+    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"; 
+    Invoke-WebRequest -Uri "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.5.zip" -OutFile "elasticsearch.zip";
+    Expand-Archive "elasticsearch.zip" -DestinationPath "C:\elasticsearch";
+    Start-Process C:\elasticsearch\elasticsearch-5.6.5\bin\elasticsearch;
+    & $env:PYTHON\python.exe -m pip install pip setuptools wheel --upgrade;
+    & $env:PYTHON\python.exe -m pip install -r requirements-dev.txt;
+    & $env:PYTHON\python.exe -m pip install celery[redis] eventlet;
 
 build: off
 
 test_script:
-  - ps: '& "$env:PYTHON\python.exe" -m coverage run --include="uploader_cli/*" -m pytest -v uploader'
-  - ps: '& "$env:PYTHON\python.exe" -m coverage report --show-missing --fail-under 100'
+- ps: >
+    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}";
+    coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help;
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help;
+    $env:UPLOADER_CONFIG = 'travis/uploader.json';
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help;
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help;
+    yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure;
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v;
+    coverage report --show-missing --fail-under 100;
