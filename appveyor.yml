@@ -74,7 +74,7 @@ test_script:
 - ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: printf '\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-- ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | python CLIUploader.py configure
+- ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54 --logon dmlb2001
 - ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
 - ps: $env:PAGER = 'cat'
