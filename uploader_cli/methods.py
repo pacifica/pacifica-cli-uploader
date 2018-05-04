@@ -3,9 +3,9 @@
 """Methods for the sub commands to run."""
 from __future__ import absolute_import, print_function
 import logging
-try:
+try:  # try loading python 2 module first
     from ConfigParser import ConfigParser
-except ImportError:
+except ImportError:  # pragma: no cover python 3
     from configparser import ConfigParser
 from getpass import getuser
 from os import environ
