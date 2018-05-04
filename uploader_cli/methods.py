@@ -3,12 +3,15 @@
 """Methods for the sub commands to run."""
 from __future__ import absolute_import, print_function
 import logging
-from ConfigParser import ConfigParser
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 from getpass import getuser
 from os import environ
 from os.path import isfile
-from uploader.Uploader import LOGGER as UP_LOGGER
-from uploader.metadata.PolicyQuery import LOGGER as PQ_LOGGER
+from uploader.uploader import LOGGER as UP_LOGGER
+from uploader.metadata.policyquery import LOGGER as PQ_LOGGER
 from uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth, configure_ca_bundle
 from .query import query_main
