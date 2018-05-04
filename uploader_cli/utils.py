@@ -20,5 +20,5 @@ def user_config_path(config_file):
     home = expanduser('~')
     pacifica_local_state = join(home, '.pacifica_cli')
     if not isdir(pacifica_local_state):
-        makedirs(pacifica_local_state, 0700)
+        makedirs(pacifica_local_state, 0o700)
     return join(pacifica_local_state, config_file)

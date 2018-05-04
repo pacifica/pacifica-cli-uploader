@@ -1,2 +1,3 @@
 git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
 pager
+six

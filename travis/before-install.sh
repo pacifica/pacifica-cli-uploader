@@ -8,8 +8,10 @@ if [ -z "$RUN_LINTS" ]; then
   export POSTGRES_ENV_POSTGRES_PASSWORD=
   export MYSQL_ENV_MYSQL_USER=root
   export MYSQL_ENV_MYSQL_PASSWORD=
-  ArchiveInterfaceServer.py --config travis/config.cfg &
+  pushd travis/archivei
+  ArchiveInterfaceServer.py &
   echo $! > archiveinterface.pid
+  popd
   pushd travis/uniqueid
   UniqueIDServer.py &
   popd

@@ -1,10 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """These are the query methods used for interactive query."""
+from __future__ import print_function
 from sys import stdin, stdout, stderr
 from subprocess import Popen, PIPE
 from os import getenv, pathsep, path
 import re
+from six import text_type
 
 
 def set_query_obj(dep_meta_ids, md_update, obj):
@@ -51,8 +53,8 @@ def format_query_results(md_update, query_obj):
     valid_ids = []
     display_data = {}
     for obj in md_update[query_obj.metaID].query_results:
-        valid_ids.append(unicode(obj['_id']))
-        display_data[unicode(
+        valid_ids.append(text_type(obj['_id']))
+        display_data[text_type(
             obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     return (valid_ids, display_data)
 
@@ -61,7 +63,7 @@ def set_selected_id(selected_id, default_id, valid_ids):
     """Return the selected ID validating it first."""
     if not selected_id:
         selected_id = default_id
-    if unicode(selected_id) not in valid_ids:
+    if text_type(selected_id) not in valid_ids:
         selected_id = False
     return selected_id
 
@@ -127,7 +129,8 @@ def set_results(md_update, query_obj, default_id, interactive=False):
     if interactive:
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
     else:
-        print u'Setting {} to {}.'.format(query_obj.metaID, default_id).encode('utf-8')
+        print(text_type('Setting {} to {}.').format(
+            query_obj.metaID, default_id).encode('utf-8'))
         selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
         new_obj = query_obj._replace(value=selected_id)
@@ -141,7 +144,7 @@ def filter_results(md_update, query_obj, regex):
     filtered_results = []
     for index in range(len(query_obj.query_results)):
         res = query_obj.query_results[index]
-        if reg_engine.search(display_data[unicode(res['_id'])]):
+        if reg_engine.search(display_data[text_type(res['_id'])]):
             filtered_results.append(query_obj.query_results[index])
     md_update[query_obj.metaID] = query_obj._replace(
         query_results=filtered_results)
@@ -157,7 +160,7 @@ def query_main(md_update, args):
         query_obj = find_leaf_node(md_update)
         regex = getattr(args, '{}_regex'.format(query_obj.metaID))
         if not regex:
-            regex = ur'.*'
+            regex = text_type('.*')
         filter_results(md_update, query_obj, regex)
         default_id = getattr(args, query_obj.metaID, None)
         if not default_id:

@@ -1,6 +1,6 @@
 repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: v1.1.1
+    rev: v1.2.3
     hooks:
             -   id: autopep8-wrapper
             -   id: fix-encoding-pragma
@@ -22,7 +22,6 @@ repos:
             -   id: check-json
             -   id: check-vcs-permalinks
             -   id: mixed-line-ending
-            -   id: name-tests-test
             -   id: pretty-format-json
                 args:
                   - --autofix
@@ -43,10 +42,11 @@ repos:
                 types: [python]
             -   id: pylint
                 name: pylint
-                entry: python -m pylint --rcfile=pylintrc --disable=C0103
+                entry: python -m pylint --rcfile=pylintrc --disable=similarities
                 language: system
                 types: [python]
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
-    sha: v1.1.4
+    rev: v1.1.5
     hooks:
     -   id: remove-tabs
+    -   id: remove-crlf
