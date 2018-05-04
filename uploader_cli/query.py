@@ -6,7 +6,7 @@ from sys import stdin, stdout, stderr
 from subprocess import Popen, PIPE
 from os import getenv, pathsep, path
 import re
-from six import text_type
+from six import text_type, PY2
 
 
 def set_query_obj(dep_meta_ids, md_update, obj):
@@ -44,7 +44,12 @@ def paged_content(title, display_data, valid_ids):
 {} - Select an ID
 =====================================
 """.format(title)
-    for _id in sorted(valid_ids, cmp=id_cmp):
+    if PY2:  # pramga: no cover python 2 only
+        sort_args = {'cmp': id_cmp}
+    else:  # pragma: no cover python 3+ only
+        from functools import cmp_to_key
+        sort_args = {'key': cmp_to_key(id_cmp)}
+    for _id in sorted(valid_ids, **sort_args):
         yield display_data[_id]
 
 

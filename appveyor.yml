@@ -71,6 +71,6 @@ test_script:
 - ps: $env:UPLOADER_CONFIG = 'travis/uploader.json'
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help
-- ps: yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
+- ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v
 - ps: coverage report --show-missing --fail-under 100
