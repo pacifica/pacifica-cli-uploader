@@ -65,13 +65,12 @@ install:
 build: off
 
 test_script:
-- ps: >
-    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}";
-    coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help;
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help;
-    $env:UPLOADER_CONFIG = 'travis/uploader.json';
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help;
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help;
-    yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure;
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v;
-    coverage report --show-missing --fail-under 100;
+- ps: $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help
+- ps: $env:UPLOADER_CONFIG = 'travis/uploader.json'
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help
+- ps: yes | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v
+- ps: coverage report --show-missing --fail-under 100
