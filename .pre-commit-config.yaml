@@ -42,7 +42,7 @@ repos:
                 types: [python]
             -   id: pylint
                 name: pylint
-                entry: python -m pylint --rcfile=pylintrc --disable=similarities
+                entry: python -m pylint --rcfile=pylintrc
                 language: system
                 types: [python]
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
