@@ -58,7 +58,7 @@ class TestMethods(TestCase):
         """Test the verify_type method to cover everything."""
         self.assertEqual(verify_type('True'), True)
         self.assertEqual(verify_type('False'), False)
-        self.assertEqual(verify_type('/etc/hosts'), '/etc/hosts')
+        self.assertEqual(verify_type('README.md'), 'README.md')
         hit_exception = False
         try:
             verify_type('blarg')
