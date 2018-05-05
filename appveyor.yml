@@ -81,5 +81,21 @@ test_script:
 - ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
 - ps: printf '8192\n\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
 - ps: whoami
+- ps: Invoke-WebRequest -Method POST -Content-Type 'application/json' -Body '{ "network_id": "appveyor" }' http://localhost:8121/users?_id=11
+- ps: >
+    echo "This should fail";
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose debug upload --dry-run --instrument 54;
+    if ( $? ) { exit -1; };
+    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 9876;
+    if ( $? ) { exit -1; };
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
+- ps: Invoke-WebRequest -Method POST -Content-Type 'application/json' -Body '{ "network_id": "appveyor" }' http://localhost:8121/users?_id=10
+- ps: Invoke-WebRequest -Method POST -Content-Type 'application/json' -Body '{ "network_id": "someoneelse" }' http://localhost:8121/users?_id=11
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload README.md
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload travis
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --tar-in-tar README.md
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-save retry.tar README.md
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --local-retry retry.tar
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --nowait README.md
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v tests
 - ps: coverage report --show-missing --fail-under 100
