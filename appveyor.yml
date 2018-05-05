@@ -84,10 +84,20 @@ test_script:
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=11
 - ps: >
     echo "This should fail";
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose debug upload --dry-run --instrument 54;
-    if ( $? ) { exit -1; };
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 9876;
-    if ( $? ) { exit -1; };
+    $hit_exception = False;
+    try {
+      coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose debug upload --dry-run --instrument 54
+    } Catch {
+      $hit_exception = True;
+    };
+    if ( ! $hit_exception ) { exit -1; };
+    $hit_exception = False;
+    try {
+      coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 9876;
+    } Catch {
+      $hit_exception = True;
+    };
+    if ( ! $hit_exception ) { exit -1; };
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11
