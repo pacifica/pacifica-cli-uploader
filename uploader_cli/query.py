@@ -40,10 +40,10 @@ def paged_content(title, display_data, valid_ids):
         int_a = int(num_re.match(a_id).group(0))
         int_b = int(num_re.match(b_id).group(0))
         return int_a < int_b
-    yield text_type("""
+    yield u"""
 {} - Select an ID
 =====================================
-""").format(title)
+""".format(title)
     if PY2:  # pragma: no cover python 2 only
         sort_args = {'cmp': id_cmp}
     else:  # pragma: no cover python 3+ only
@@ -110,7 +110,7 @@ def execute_pager(content):
         stdout=stdout,
         stderr=stderr
     )
-    pager_proc.communicate(text_type('\n').join(content))
+    pager_proc.communicate(u'\n'.join(content).encode('utf-8'))
     return pager_proc.wait()
 
 
@@ -123,7 +123,7 @@ def interactive_select_loop(md_update, query_obj, default_id):
     while not selected_id:
         execute_pager(paged_content(
             query_obj.displayTitle, display_data, valid_ids))
-        stdout.write(text_type('Select ID ({}): ').format(default_id))
+        stdout.write(u'Select ID ({}): '.format(default_id))
         selected_id = stdin.readline().strip()
         selected_id = set_selected_id(selected_id, default_id, valid_ids)
     return selected_id
@@ -135,7 +135,7 @@ def set_results(md_update, query_obj, default_id, interactive=False):
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
     else:
         print(text_type('Setting {} to {}.').format(
-            query_obj.metaID, default_id))
+            query_obj.metaID, default_id).encode('utf-8'))
         selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
         new_obj = query_obj._replace(value=selected_id)
@@ -178,5 +178,5 @@ def query_main(md_update, args):
         )
         if not md_update[query_obj.metaID].value:
             raise RuntimeError(
-                text_type('Could not find value for {}').format(query_obj.metaID))
+                u'Could not find value for {}'.format(query_obj.metaID))
     return md_update
