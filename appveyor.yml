@@ -66,6 +66,8 @@ build: off
 
 test_script:
 - ps: $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"
+- ps: mkdir -p "C:\etc\pacifica-cli"
+- ps: cp config/example.ini /etc/pacifica-cli/config.ini
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help
 - ps: $env:UPLOADER_CONFIG = 'travis/uploader.json'
