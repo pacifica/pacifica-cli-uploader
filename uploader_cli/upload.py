@@ -70,7 +70,7 @@ def check(status):
 
 def save_local(rfd, wfd, save_filename):
     """Save the bytes from rfd to args.savelocal and wfd."""
-    with open(save_filename, 'w') as sfd:
+    with open(save_filename, 'wb') as sfd:
         buf = rfd.read(BLOCK_SIZE)
         while buf:
             sfd.write(buf)
