@@ -7,7 +7,7 @@ from json import dumps
 from copy import deepcopy
 from sys import stdout
 from os import pipe, fdopen, walk, stat
-from os.path import isfile, isdir, join
+from os.path import isfile, isdir, sep, join
 from time import sleep
 from datetime import datetime
 import logging
@@ -23,7 +23,7 @@ def generate_names_from_dir(dirpath, followlinks):
     ret = []
     for root, _dirs, files in walk(dirpath, followlinks=followlinks):
         for fname in files:
-            name = join(root, fname)
+            name = join(root, fname).replace(sep, '/')
             ret.append(name)
     return ret
 
