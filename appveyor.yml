@@ -96,7 +96,7 @@ test_script:
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload travis
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload travis
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --tar-in-tar README.md
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-save retry.tar README.md
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-retry retry.tar
