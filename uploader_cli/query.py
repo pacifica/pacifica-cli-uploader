@@ -97,7 +97,7 @@ def execute_pager(content):
         ['most']
     ]
     for pager_exe in pager_exes:
-        if not (pager_exe and pager_exe[0]):
+        if not (pager_exe and pager_exe[0]):  # pragma: no cover simple check to see if pager is something
             continue
         pager_full_path = parse_command(pager_exe[0])
         if pager_full_path:
