@@ -44,7 +44,7 @@ def paged_content(title, display_data, valid_ids):
 {} - Select an ID
 =====================================
 """.format(title)
-    if PY2:  # pramga: no cover python 2 only
+    if PY2:  # pragma: no cover python 2 only
         sort_args = {'cmp': id_cmp}
     else:  # pragma: no cover python 3+ only
         from functools import cmp_to_key
