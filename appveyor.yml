@@ -78,6 +78,7 @@ test_script:
 - ps: printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54 --logon dmlb2001
+- ps: $env:PAGER = ''
 - ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
 - ps: $env:PAGER = 'cat'
 - ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
@@ -95,7 +96,7 @@ test_script:
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload travis
+- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --verbose=debug upload travis
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --tar-in-tar README.md
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-save retry.tar README.md
 - ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-retry retry.tar
