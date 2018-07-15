@@ -5,7 +5,9 @@
 [![Code Climate](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/gpa.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader)
 [![Test Coverage](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/coverage.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/coverage)
 [![Issue Count](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/issue_count.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader)
-
+[![Docker Stars](https://img.shields.io/docker/stars/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/general)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/general)
+[![Docker Automated build](https://img.shields.io/docker/automated/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/builds)
 
 Python CLI Uploader for Pacifica Core Services. This uploader wraps the
 [Pacifica Python Uploader](https://github.com/pacifica/pacifica-python-uploader)
