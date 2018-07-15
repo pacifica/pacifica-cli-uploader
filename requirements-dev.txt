@@ -10,7 +10,7 @@ coverage>=4.0,<4.4
 pager
 pep257
 pre-commit
-pylint
+pylint<2.0
 pytest
 radon
 redis
