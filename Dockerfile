@@ -9,4 +9,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pip install .
 RUN cp travis/uploader.json .
-ENTRYPOINT ["entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
