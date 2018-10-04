@@ -6,7 +6,7 @@ try:  # python 2 import
     from ConfigParser import ConfigParser
 except ImportError:  # pragma: no cover python 3 import
     from configparser import ConfigParser
-from uploader_cli.methods import generate_requests_auth, verify_type
+from pacifica.cli.methods import generate_requests_auth, verify_type
 
 
 # pylint: disable=too-few-public-methods

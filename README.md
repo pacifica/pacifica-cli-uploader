@@ -19,11 +19,11 @@ To install the CLI uploader set up your python environment and then use
 pip to install.
 
 ```
-pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
-pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=PacificaCLIUploader
+pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=pacifica-uploader
+pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=pacifica-cli
 ```
 
-## CLIUploader
+## `pacifica-cli`
 
 This is the main executable program it consists of a main program from
 `uploader_cli` module. Users should be able to access the program from
@@ -59,7 +59,7 @@ be read from
 ### Example Interaction
 
 ```
-$ CLIUploader configure
+$ pacifica-cli configure
 Generating New Configuration.
 
 Endpoints are an HTTP URL that looks similar to a website but
@@ -137,7 +137,7 @@ values for each metadata entry requested.
 ### Example Interaction
 
 ```
-$ CLIUploader upload --interactive config.cfg
+$ pacifica-cli upload --interactive config.cfg
 
 Instrument ID - Select an ID
 =====================================

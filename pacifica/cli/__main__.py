@@ -94,3 +94,7 @@ def main():
 
     args = parser.parse_args(argv[1:])
     args.func(args, config_data)
+
+
+if __name__ == '__main__':
+    main()

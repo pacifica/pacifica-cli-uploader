@@ -68,38 +68,38 @@ test_script:
 - ps: $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"
 - ps: mkdir -p "C:\etc\pacifica-cli"
 - ps: cp config/example.ini /etc/pacifica-cli/config.ini
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' CLIUploader.py --config travis/uploader.json --help
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py --config=travis/uploader.json --help
+- ps: coverage run --include='pacifica/*' -m pacifica.cli --config travis/uploader.json --help
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli --config=travis/uploader.json --help
 - ps: $env:UPLOADER_CONFIG = 'travis/uploader.json'
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --help
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure --help
-- ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-- ps: printf '\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-- ps: printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-- ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py configure
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54 --logon dmlb2001
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --help
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli configure --help
+- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
+- ps: printf '\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
+- ps: printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
+- ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 54 --logon dmlb2001
 - ps: $env:PAGER = ''
-- ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
+- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
 - ps: $env:PAGER = 'cat'
-- ps: printf '\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
-- ps: printf '8192\n\n\n\n\n' | coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --interactive --logon dmlb2001
+- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
+- ps: printf '8192\n\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
 - ps: whoami
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=11
 - ps: >
     echo "This should fail";
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 54;
+    coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 54;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
-    coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --instrument 9876;
+    coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 9876;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
     echo "Done with failure testing";
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10
 - ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload travis
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --tar-in-tar README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-save retry.tar README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --local-retry retry.tar
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a CLIUploader.py upload --nowait README.md
-- ps: coverage run --include='uploader_cli/*,CLIUploader.py' -a -m pytest -v tests
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload README.md
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload travis
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --tar-in-tar README.md
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --local-save retry.tar README.md
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --local-retry retry.tar
+- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --nowait README.md
+- ps: coverage run --include='pacifica/*' -a -m pytest -v tests
 - ps: coverage report --show-missing --fail-under 100
