@@ -10,9 +10,9 @@ except ImportError:  # pragma: no cover python 3
 from getpass import getuser
 from os import environ
 from os.path import isfile
-from uploader.uploader import LOGGER as UP_LOGGER
-from uploader.metadata.policyquery import LOGGER as PQ_LOGGER
-from uploader.metadata import MetaUpdate
+from pacifica.uploader.uploader import LOGGER as UP_LOGGER
+from pacifica.uploader.metadata.policyquery import LOGGER as PQ_LOGGER
+from pacifica.uploader.metadata import MetaUpdate
 from .configure import configure_url_endpoints, configure_auth, configure_ca_bundle
 from .query import query_main
 from .upload import upload_main

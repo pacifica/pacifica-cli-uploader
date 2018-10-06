@@ -11,7 +11,7 @@ from os.path import isfile, isdir, sep, join
 from time import sleep
 from datetime import datetime
 import logging
-from uploader import Uploader, bundler
+from pacifica.uploader import Uploader, bundler
 
 
 BLOCK_SIZE = 1024 * 1024

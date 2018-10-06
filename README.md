@@ -1,32 +1,31 @@
 # Pacifica CLI Uploader
 
-[![Build Status](https://travis-ci.org/pacifica/pacifica-cli-uploader.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cli-uploader)
-[![Build Status](https://ci.appveyor.com/api/projects/status/0ddinx1bdfroptf7?svg=true)](https://ci.appveyor.com/project/dmlb2000/pacifica-cli-uploader)
-[![Code Climate](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/gpa.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader)
-[![Test Coverage](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/coverage.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/coverage)
-[![Issue Count](https://codeclimate.com/github/pacifica/pacifica-cli-uploader/badges/issue_count.svg)](https://codeclimate.com/github/pacifica/pacifica-cli-uploader)
-[![Docker Stars](https://img.shields.io/docker/stars/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/general)
-[![Docker Pulls](https://img.shields.io/docker/pulls/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/general)
-[![Docker Automated build](https://img.shields.io/docker/automated/pacifica/cliuploader.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cliuploader/builds)
+[![Build Status](https://travis-ci.org/pacifica/pacifica-cli-uploader.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cli)
+[![Build Status](https://ci.appveyor.com/api/projects/status/0ddinx1bdfroptf7?svg=true)](https://ci.appveyor.com/project/dmlb2000/pacifica-cli)
+[![Code Climate](https://codeclimate.com/github/pacifica/pacifica-cli/badges/gpa.svg)](https://codeclimate.com/github/pacifica/pacifica-cli)
+[![Issue Count](https://codeclimate.com/github/pacifica/pacifica-cli/badges/issue_count.svg)](https://codeclimate.com/github/pacifica/pacifica-cli)
+[![Docker Stars](https://img.shields.io/docker/stars/pacifica/cli.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cli/general)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pacifica/cli.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cli/general)
+[![Docker Automated build](https://img.shields.io/docker/automated/pacifica/cli.svg?maxAge=2592000)](https://cloud.docker.com/swarm/pacifica/repository/docker/pacifica/cli/builds)
 
-Python CLI Uploader for Pacifica Core Services. This uploader wraps the
-[Pacifica Python Uploader](https://github.com/pacifica/pacifica-python-uploader)
-library for Windows or Linux command line.
+Python CLI for Pacifica Core Services. This uploader wraps the
+[Pacifica Python Uploader](https://github.com/pacifica/pacifica-python-uploader) and
+[Pacifica Python Downloader](https://github.com/pacifica/pacifica-python-downloader)
+libraries for Windows or Linux command line.
 
 ## Installation
 
-To install the CLI uploader set up your python environment and then use
+To install the CLI set up your python environment and then use
 pip to install.
 
 ```
-pip install git+git://github.com/pacifica/pacifica-python-uploader.git#egg=pacifica-uploader
-pip install git+git://github.com/pacifica/pacifica-cli-uploader.git#egg=pacifica-cli
+pip install pacifica-cli
 ```
 
 ## `pacifica-cli`
 
 This is the main executable program it consists of a main program from
-`uploader_cli` module. Users should be able to access the program from
+`pacifica.cli` module. Users should be able to access the program from
 the bin or scripts directories in their python environment.
 
 ## Configure Sub-Command

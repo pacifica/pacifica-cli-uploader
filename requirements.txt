@@ -1,3 +1,4 @@
-git+git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
+pacifica-downloader
+pacifica-uploader
 pager
 six

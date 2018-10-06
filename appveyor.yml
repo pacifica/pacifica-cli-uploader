@@ -3,18 +3,11 @@ pull_requests:
   do_not_increment_build_number: true
 
 environment:
-  MYSQL_HOST: localhost
-  MYSQL_USER: root
-  MYSQL_PASSWORD: Password12!
   PGUSER: postgres
   PGPASSWORD: Password12!
-  MYSQL_PATH: C:\Program Files\MySQL\MySQL Server 5.7
   PGSQL_PATH: C:\Program Files\PostgreSQL\9.6
-  POSTGRES_ENV_POSTGRES_USER: postgres
-  POSTGRES_ENV_POSTGRES_PASSWORD: Password12!
-  MYSQL_ENV_MYSQL_USER: root
-  MYSQL_ENV_MYSQL_PASSWORD: Password12!
   VOLUME_PATH: C:\ingest
+  PEEWEE_URL: postgres://postgres:Password12!@localhost/pacifica_metadata
   BROKER_URL: redis://127.0.0.1:6379/0
   BACKEND_URL: redis://127.0.0.1:6379/0
 
@@ -23,34 +16,45 @@ environment:
     - PYTHON: C:\Python36-x64
 
 services:
-  - mysql
   - postgresql
 
 before_test:
 - ps: >
-    $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}";
-    mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_ingest;
-    mysqladmin --host=$env:MYSQL_HOST --user=$env:MYSQL_USER --password=$env:MYSQL_PASSWORD create pacifica_uniqueid;
+    $env:PATH = "${env:PGSQL_PATH}\bin;${env:PATH}";
     createdb pacifica_metadata;
+    C:\pacifica\Scripts\activate.ps1;
     mkdir C:\ingest;
     mkdir C:\archive;
+    mkdir -p "C:\etc\pacifica-cli";
+    cp config/example.ini /etc/pacifica-cli/config.ini;
+    $env:METADATA_CPCONFIG = "$PWD/travis/metadata/server.conf";
+    Start-Process C:\pacifica\Scripts\pacifica-metadata.exe -RedirectStandardError metadata-error.log -RedirectStandardOutput metadata-output.log;
     nuget install redis-64 -excludeversion;
     redis-64\tools\redis-server.exe --service-install;
     redis-64\tools\redis-server.exe --service-start;
-    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\ArchiveInterfaceServer.py --prefix C:\archive" -WorkingDirectory "travis/archivei";
-    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\UniqueIDServer.py" -WorkingDirectory "travis\uniqueid";
-    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\MetadataServer.py" -WorkingDirectory "travis\metadata";
-    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\IngestServer.py" -WorkingDirectory "travis\ingest";
-    Start-Process $env:PYTHON\python.exe -ArgumentList "-m celery -A ingest.backend worker --loglevel=info -P eventlet" -WorkingDirectory "travis\ingest";
-    Invoke-WebRequest https://github.com/pacifica/pacifica-metadata/archive/master.zip -OutFile pacifica-metadata.zip;
+    $env:ARCHIVEINTERFACE_CONFIG = "$PWD/travis/archivei/config.cfg";
+    $env:ARCHIVEINTERFACE_CPCONFIG = "$PWD/travis/archivei/server.conf";
+    Start-Process C:\pacifica\Scripts\pacifica-archiveinterface.exe;
+    $env:UNIQUEID_CONFIG = "$PWD/travis/uniqueid/config.cfg";
+    $env:UNIQUEID_CPCONFIG = "$PWD/travis/uniqueid/server.conf";
+    Start-Process C:\pacifica\Scripts\pacifica-uniqueid.exe;
+    $env:INGEST_CONFIG = "$PWD/travis/ingest/config.cfg";
+    $env:INGEST_CPCONFIG = "$PWD/travis/ingest/server.conf";
+    Start-Process C:\pacifica\Scripts\pacifica-ingest.exe;
+    Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.ingest.tasks worker --loglevel=info -P eventlet";
+    $MD_VERSION = `pip show pacifica-metadata | grep Version: | awk '{ print $2 }';
+    Invoke-WebRequest https://github.com/pacifica/pacifica-metadata/archive/v${MD_VERSION}.zip -OutFile pacifica-metadata.zip;
     Expand-Archive pacifica-metadata.zip -DestinationPath C:\pacifica-metadata;
-    sleep 10;
-    Invoke-WebRequest http://localhost:8121/users;
-    pushd C:\pacifica-metadata\pacifica-metadata-master;
-    & $env:PYTHON\python.exe -m test_files.loadit;
+    sleep 10; Invoke-WebRequest http://localhost:8121/users;
+    pushd C:\pacifica-metadata\pacifica-metadata-${MD_VERSION};
+    python tests\test_files\loadit_test.py;
     popd;
-    Start-Process $env:PYTHON\python.exe -ArgumentList "$env:PYTHON\scripts\PolicyServer.py" -WorkingDirectory "travis\policy";
-    Invoke-WebRequest http://localhost:8181/status/users/search/dmlb2001/simple -TimeoutSec 1800;
+    $env:POLICY_CPCONFIG = "$PWD/travis/policy/server.conf";
+    $env:METADATA_URL = "http://127.0.0.1:8121";
+    $env:STATUS_URL = "http://127.0.0.1:8121/keys?_id=104";
+    Start-Process C:\pacifica\Scripts\pacifica-policy.exe -RedirectStandardError policy-error.log -RedirectStandardOutput policy-output.log;
+    sleep 3;
+    Invoke-WebRequest http://127.0.0.1:8181/status/users/search/dmlb2001/simple -TimeoutSec 1800;
 
 install:
 - ps: >
@@ -58,48 +62,52 @@ install:
     Invoke-WebRequest -Uri "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.5.zip" -OutFile "elasticsearch.zip";
     Expand-Archive "elasticsearch.zip" -DestinationPath "C:\elasticsearch";
     Start-Process C:\elasticsearch\elasticsearch-5.6.5\bin\elasticsearch;
-    & $env:PYTHON\python.exe -m pip install pip setuptools wheel --upgrade;
-    & $env:PYTHON\python.exe -m pip install -r requirements-dev.txt;
-    & $env:PYTHON\python.exe -m pip install celery[redis] eventlet;
+    & $env:PYTHON\python.exe -m virtualenv C:\pacifica;
+    C:\pacifica\Scripts\activate.ps1;
+    python -m pip install pip setuptools wheel --upgrade;
+    pip install -r requirements-dev.txt;
+    pip install celery[redis] eventlet;
 
 build: off
 
 test_script:
-- ps: $env:PATH = "$env:MYSQL_PATH\bin;${env:PGSQL_PATH}\bin;${env:PYTHON}\Scripts;${env:PATH}"
-- ps: mkdir -p "C:\etc\pacifica-cli"
-- ps: cp config/example.ini /etc/pacifica-cli/config.ini
-- ps: coverage run --include='pacifica/*' -m pacifica.cli --config travis/uploader.json --help
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli --config=travis/uploader.json --help
-- ps: $env:UPLOADER_CONFIG = 'travis/uploader.json'
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --help
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli configure --help
-- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
-- ps: printf '\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
-- ps: printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
-- ps: printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='pacifica/*' -a -m pacifica.cli configure
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 54 --logon dmlb2001
-- ps: $env:PAGER = ''
-- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
-- ps: $env:PAGER = 'cat'
-- ps: printf '\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
-- ps: printf '8192\n\n\n\n\n' | coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001
-- ps: whoami
-- ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=11
 - ps: >
+    C:\pacifica\Scripts\activate.ps1;
+    pip install .;
+    cd tests;
+    cp -r ../travis .;
+    cp ../README.md .;
+    coverage run --include='*/site-packages/pacifica/cli/*' -m pacifica.cli --config ../travis/uploader.json --help;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli --config=../travis/uploader.json --help;
+    $env:UPLOADER_CONFIG = '../travis/uploader.json';
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --help;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure --help;
+    printf '\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf '\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf '\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nTrue\nNone\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --instrument 54 --logon dmlb2001;
+    $env:PAGER = '';
+    printf '\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001;
+    $env:PAGER = 'cat';
+    printf '\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001;
+    printf '8192\n\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --interactive --logon dmlb2001;
+    whoami;
+    Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=11;
     echo "This should fail";
-    coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 54;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --instrument 54;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
-    coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --instrument 9876;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --instrument 9876;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
     echo "Done with failure testing";
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
-- ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10
-- ps: Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload README.md
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload travis
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --tar-in-tar README.md
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --local-save retry.tar README.md
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --local-retry retry.tar
-- ps: coverage run --include='pacifica/*' -a -m pacifica.cli upload --nowait README.md
-- ps: coverage run --include='pacifica/*' -a -m pytest -v tests
-- ps: coverage report --show-missing --fail-under 100
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end';
+    Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10;
+    Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload travis;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --tar-in-tar README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-retry retry.tar;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --nowait README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xv;
+    coverage report --show-missing --fail-under 100

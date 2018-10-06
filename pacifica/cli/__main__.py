@@ -4,7 +4,7 @@
 import sys
 import argparse
 from os import getenv
-from uploader.metadata import metadata_decode
+from pacifica.uploader.metadata import metadata_decode
 from .methods import upload, configure
 from .utils import system_config_path
 

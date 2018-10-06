@@ -1,12 +1,12 @@
+-r requirements.txt
 celery
 codeclimate-test-reporter
 coverage>=4.0,<4.4
--e git://github.com/pacifica/pacifica-archiveinterface.git#egg=PacificaArchiveInterface
--e git://github.com/pacifica/pacifica-ingest.git#egg=PacificaIngest
--e git://github.com/pacifica/pacifica-metadata.git#egg=PacificaMetadata
--e git://github.com/pacifica/pacifica-policy.git#egg=PacificaPolicy
--e git://github.com/pacifica/pacifica-uniqueid.git#egg=PacificaUniqueID
--e git://github.com/pacifica/pacifica-python-uploader.git#egg=PacificaUploader
+pacifica-archiveinterface
+pacifica-ingest
+pacifica-metadata
+pacifica-policy
+pacifica-uniqueid
 pager
 pep257
 pre-commit

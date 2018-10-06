@@ -1,42 +1,77 @@
 sudo: required
 services:
- - postgresql
- - mysql
- - elasticsearch
- - rabbitmq
+- postgresql
+- elasticsearch
+- rabbitmq
 language: python
-python:
- - 2.7
- - 3.6
-
 stages:
 - lint
 - test
-
+- deploy
 addons:
   apt:
     sources:
-      - elasticsearch-5.x
+    - elasticsearch-5.x
     packages:
-      - elasticsearch
-      - oracle-java8-set-default
-
+    - elasticsearch
+    - oracle-java8-set-default
 cache: pip
-
-before_install: bash -xe travis/before-install.sh
-install: pip install -r requirements-dev.txt
-script:
+".before_install": &3
+- bash -xe travis/before-install.sh
+".install": &1
+- pip install -r requirements-dev.txt
+".script": &4
 - bash -xe travis/unit-tests.sh
 - bash -xe travis/test-deploy.sh
-
+".lint_script": &2
+- pre-commit run -a
+- radon cc pacifica
 jobs:
   include:
   - stage: lint
+    services: []
     python: 3.6
-    script:
-    - pre-commit run -a
-    - radon cc pacifica
+    install: *1
+    script: *2
   - python: 2.7
-    script:
-    - pre-commit run -a
-    - radon cc pacifica
+    services: []
+    script: *2
+    install: *1
+  - stage: test
+    python: 2.7
+    before_install: *3
+    install: *1
+    script: *4
+  - python: 3.6
+    before_install: *3
+    install: *1
+    script: *4
+  - stage: deploy
+    services: []
+    language: python
+    before_install: skip
+    script: skip
+    python: 3.6
+    deploy:
+      skip_cleanup: true
+      provider: pypi
+      user: dmlb2000
+      distributions: sdist bdist_wheel
+      password:
+        secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
+      on:
+        tags: true
+  - services: []
+    language: python
+    before_install: skip
+    script: skip
+    python: 2.7
+    deploy:
+      skip_cleanup: true
+      provider: pypi
+      user: dmlb2000
+      distributions: bdist_wheel
+      password:
+        secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
+      on:
+        tags: true
