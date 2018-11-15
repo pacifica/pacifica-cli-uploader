@@ -1,6 +1,6 @@
 # Pacifica CLI Uploader
 
-[![Build Status](https://travis-ci.org/pacifica/pacifica-cli-uploader.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cli)
+[![Build Status](https://travis-ci.org/pacifica/pacifica-cli.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cli)
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ddinx1bdfroptf7?svg=true)](https://ci.appveyor.com/project/dmlb2000/pacifica-cli)
 [![Code Climate](https://codeclimate.com/github/pacifica/pacifica-cli/badges/gpa.svg)](https://codeclimate.com/github/pacifica/pacifica-cli)
 [![Issue Count](https://codeclimate.com/github/pacifica/pacifica-cli/badges/issue_count.svg)](https://codeclimate.com/github/pacifica/pacifica-cli)

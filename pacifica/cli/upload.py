@@ -177,9 +177,31 @@ def perform_upload(md_update, args, content_length, tar_size):
     rfd, wfd = setup_chain_thread(
         (rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
     setup_bundler(wfd, md_update, args, wthreads)
-    up_obj = Uploader(auth=md_update.get_auth())
     LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s',
                  rfd, wfd, len(wthreads), content_length)
+    if args.do_not_upload:
+        jobid, up_obj = fake_uploader(rfd, content_length)
+    else:
+        jobid, up_obj = invoke_uploader(md_update, rfd, content_length)
+    for wthread in wthreads:
+        wthread.join()
+    LOGGER.debug('Threads completd')
+    rfd.close()
+    return jobid, up_obj
+
+
+def fake_uploader(rfd, content_length):
+    """Fake the upload by reading all the content then returning."""
+    read_data = 0
+    while read_data < content_length:
+        buf = rfd.read(1024)
+        read_data += len(buf)
+    return -1, None
+
+
+def invoke_uploader(md_update, rfd, content_length):
+    """Invoke the uploader code to actually upload."""
+    up_obj = Uploader(auth=md_update.get_auth())
 
     # pylint: disable=too-few-public-methods
     class FakeFileObj(object):
@@ -197,16 +219,12 @@ def perform_upload(md_update, args, content_length, tar_size):
 
     jobid = up_obj.upload(FakeFileObj(rfd, content_length),
                           content_length=content_length)
-    for wthread in wthreads:
-        wthread.join()
-    LOGGER.debug('Threads completd')
-    rfd.close()
     return jobid, up_obj
 
 
 def wait_for_upload(args, jobid, up_obj):
     """Wait (or not) for the jobid to complete the ingest process."""
-    if not args.wait:
+    if not args.wait or args.do_not_upload:
         print('Not Waiting Job ID ({})'.format(jobid))
         return 0
     print('Waiting job to complete ({}).'.format(jobid))

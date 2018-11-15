@@ -56,6 +56,7 @@ $COV_RUN -a -m pacifica.cli upload README.md
 $COV_RUN -a -m pacifica.cli upload travis
 $COV_RUN -a -m pacifica.cli upload --tar-in-tar README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar README.md
+$COV_RUN -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md
 $COV_RUN -a -m pacifica.cli upload --local-retry retry.tar
 $COV_RUN -a -m pacifica.cli upload --nowait README.md
 

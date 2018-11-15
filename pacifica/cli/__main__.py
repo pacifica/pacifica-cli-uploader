@@ -83,6 +83,10 @@ def main():
         help='Don\'t upload, stop after query engine.', required=False
     )
     upload_parser.add_argument(
+        '--do-not-upload', default=False, action='store_true', dest='do_not_upload',
+        help='Don\'t upload, works well with local save option.', required=False
+    )
+    upload_parser.add_argument(
         '--interactive', default=False, action='store_true', dest='interactive',
         help='Interact with the query engine.', required=False
     )

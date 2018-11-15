@@ -41,7 +41,7 @@ before_test:
     $env:INGEST_CONFIG = "$PWD/travis/ingest/config.cfg";
     $env:INGEST_CPCONFIG = "$PWD/travis/ingest/server.conf";
     Start-Process C:\pacifica\Scripts\pacifica-ingest.exe;
-    Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.ingest.tasks worker --loglevel=info -P eventlet";
+    Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.ingest.tasks worker --loglevel=info -P solo -c 1" -RedirectStandardOutput celery-output.log -RedirectStandardError celery-error.log;
     $MD_VERSION = `pip show pacifica-metadata | grep Version: | awk '{ print $2 }';
     Invoke-WebRequest https://github.com/pacifica/pacifica-metadata/archive/v${MD_VERSION}.zip -OutFile pacifica-metadata.zip;
     Expand-Archive pacifica-metadata.zip -DestinationPath C:\pacifica-metadata;
@@ -55,6 +55,11 @@ before_test:
     Start-Process C:\pacifica\Scripts\pacifica-policy.exe -RedirectStandardError policy-error.log -RedirectStandardOutput policy-output.log;
     sleep 3;
     Invoke-WebRequest http://127.0.0.1:8181/status/users/search/dmlb2001/simple -TimeoutSec 1800;
+    Invoke-WebRequest 'http://127.0.0.1:8066/get_state?job_id=1234';
+    Invoke-WebRequest 'http://127.0.0.1:8051/getid?range=42&mode=test_mode';
+    Invoke-WebRequest http://127.0.0.1:8080/1234;
+    Get-Content celery-output.log; Get-Content celery-error.log;
+    echo "Done!";
 
 install:
 - ps: >
@@ -66,7 +71,7 @@ install:
     C:\pacifica\Scripts\activate.ps1;
     python -m pip install pip setuptools wheel --upgrade;
     pip install -r requirements-dev.txt;
-    pip install celery[redis] eventlet;
+    pip install celery[redis] 'redis<3.0';
 
 build: off
 
@@ -107,6 +112,7 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload travis;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --tar-in-tar README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-retry retry.tar;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --nowait README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xv;
