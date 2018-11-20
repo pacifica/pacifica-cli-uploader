@@ -22,3 +22,37 @@ def user_config_path(config_file):
     if not isdir(pacifica_local_state):
         makedirs(pacifica_local_state, 0o700)
     return join(pacifica_local_state, config_file)
+
+
+def compressor_generator(compressor_type):
+    """Return a compressor based on type, bzip2, gzip."""
+    class Compressor(object):
+        """Compressor object has consistent interface for compressing data."""
+
+        def __init__(self):
+            """Constructor to build the appropriate compressor type."""
+            if compressor_type == 'bzip2':
+                from bz2 import BZ2Compressor
+                self._comp = BZ2Compressor(9)
+                self._comp_func = self._comp.compress
+                self._flush_passthru = False
+            elif compressor_type == 'gzip':
+                from zlib import compress
+                self._comp = None
+                self._comp_func = lambda x: compress(x, 9)
+                self._flush_passthru = True
+            else:
+                self._comp = None
+                self._comp_func = lambda x: x
+                self._flush_passthru = True
+
+        def compress(self, buf):
+            """Compress the data and return it."""
+            return self._comp_func(buf)
+
+        def flush(self):
+            """Flush the data internally if required."""
+            if self._flush_passthru:
+                return ''
+            return self._comp.flush()
+    return Compressor()

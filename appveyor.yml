@@ -104,6 +104,8 @@ test_script:
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --instrument 9876;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --local-save retry.tar --local-compress BLAH;
+    if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
     echo "Done with failure testing";
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end';
     Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10;
@@ -112,6 +114,8 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload travis;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --tar-in-tar README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-retry retry.tar;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --nowait README.md;

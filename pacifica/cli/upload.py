@@ -68,14 +68,15 @@ def check(status):
     return chk
 
 
-def save_local(rfd, wfd, save_filename):
+def save_local(rfd, wfd, save_filename, compressor):
     """Save the bytes from rfd to args.savelocal and wfd."""
     with open(save_filename, 'wb') as sfd:
         buf = rfd.read(BLOCK_SIZE)
         while buf:
-            sfd.write(buf)
+            sfd.write(compressor.compress(buf))
             wfd.write(buf)
             buf = rfd.read(BLOCK_SIZE)
+        sfd.write(compressor.flush())
     rfd.close()
     wfd.close()
 
@@ -172,10 +173,20 @@ def perform_upload(md_update, args, content_length, tar_size):
     """Setup threads and perform the upload."""
     LOGGER.debug('Starting Upload.')
     wthreads = []
-    rfd, wfd = setup_chain_thread(pipefds(), (deepcopy(
-        md_update), tar_size), tar_in_tar, wthreads, args.tarintar)
     rfd, wfd = setup_chain_thread(
-        (rfd, wfd), (args.localsave,), save_local, wthreads, args.localsave)
+        pipefds(),
+        (deepcopy(md_update), tar_size),
+        tar_in_tar,
+        wthreads,
+        args.tarintar
+    )
+    rfd, wfd = setup_chain_thread(
+        (rfd, wfd),
+        (args.localsave, args.localcompress),
+        save_local,
+        wthreads,
+        args.localsave
+    )
     setup_bundler(wfd, md_update, args, wthreads)
     LOGGER.debug('Starting with rfd (%s) and wfd (%s) and %s threads %s',
                  rfd, wfd, len(wthreads), content_length)

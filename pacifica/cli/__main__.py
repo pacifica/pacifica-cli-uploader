@@ -6,7 +6,16 @@ import argparse
 from os import getenv
 from pacifica.uploader.metadata import metadata_decode
 from .methods import upload, configure
-from .utils import system_config_path
+from .utils import system_config_path, compressor_generator
+
+
+def arg_to_compressor_obj(str_obj=None):
+    """Check the argument for either 'bzip2', 'gzip', or None."""
+    if str_obj not in [None, 'bzip2', 'gzip']:
+        raise argparse.ArgumentTypeError(
+            'Value must be "bzip2" or "gzip".'
+        )
+    return compressor_generator(str_obj)
 
 
 def mangle_config_argument(argv):
@@ -69,6 +78,11 @@ def main():
     upload_parser.add_argument(
         '--local-retry', dest='localretry',
         help='Retry and upload from an existing bundle.', required=False
+    )
+    upload_parser.add_argument(
+        '--local-compress', dest='localcompress', metavar='COMP',
+        help='Compress the local saved file.', required=False,
+        type=arg_to_compressor_obj, default=arg_to_compressor_obj()
     )
     upload_parser.add_argument(
         '--local-save', dest='localsave', metavar='FILE',

@@ -45,6 +45,7 @@ curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -
 # this will fail...
 $COV_RUN -a -m pacifica.cli upload --dry-run --instrument 54 || true
 $COV_RUN -a -m pacifica.cli upload --dry-run --instrument 9876 || true
+$COV_RUN -a -m pacifica.cli upload --dry-run --local-save retry.tar --local-compress BLAH || true
 $COV_RUN -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
 
 ############################
@@ -56,6 +57,8 @@ $COV_RUN -a -m pacifica.cli upload README.md
 $COV_RUN -a -m pacifica.cli upload travis
 $COV_RUN -a -m pacifica.cli upload --tar-in-tar README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar README.md
+$COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md
+$COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md
 $COV_RUN -a -m pacifica.cli upload --local-retry retry.tar
 $COV_RUN -a -m pacifica.cli upload --nowait README.md
