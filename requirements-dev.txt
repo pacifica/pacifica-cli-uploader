@@ -13,6 +13,7 @@ pre-commit
 pylint<2.0
 pytest
 radon
+recommonmark
 redis
 requests
 six

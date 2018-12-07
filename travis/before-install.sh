@@ -3,6 +3,7 @@ pip install -r requirements-dev.txt
 psql -c 'create database pacifica_metadata;' -U postgres
 export PEEWEE_URL="postgres://postgres:@127.0.0.1:5432/pacifica_metadata"
 export METADATA_CPCONFIG="$PWD/travis/metadata/server.conf"
+pacifica-metadata-cmd dbsync
 pacifica-metadata &
 echo $! > metadata.pid
 export ARCHIVEINTERFACE_CONFIG="$PWD/travis/archivei/config.cfg"
