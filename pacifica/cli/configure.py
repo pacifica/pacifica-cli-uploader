@@ -19,9 +19,13 @@ are designed for an uploader to interact with.
 
 What are the endpoint URLs for the following...
 """)
-    for endpnt in ['upload', 'status', 'policy']:
+    for endpnt in ['upload', 'upload_status', 'upload_policy', 'download', 'download_policy']:
         default_url = global_ini.get('endpoints', '{}_url'.format(endpnt))
-        stdout.write('{} URL ({}): '.format(endpnt.capitalize(), default_url))
+        endpnt_nice = ' '.join([
+            part.capitalize() for part in endpnt.split('_')
+        ])
+        stdout.write('{} URL ({}): '.format(endpnt_nice, default_url))
+        stdout.flush()
         strip_input = stdin.readline().strip()
         if strip_input:
             global_ini.set('endpoints', '{}_url'.format(endpnt), strip_input)
@@ -41,6 +45,7 @@ Valid values:
 - a/path/to/a/cacert/bundle: custom path to the server certificate
 """)
     stdout.write('CA Certificate Bundle ({}): '.format(default_verify))
+    stdout.flush()
     strip_input = stdin.readline().strip()
     if strip_input:
         global_ini.set('endpoints', 'ca_bundle', strip_input)
@@ -52,6 +57,7 @@ def configure_client_ssl(global_ini):
         default_cfg = global_ini.get('authentication', ssl_part)
         stdout.write('Client {} ({}): '.format(
             ssl_part.capitalize(), default_cfg))
+        stdout.flush()
         strip_input = stdin.readline().strip()
         if strip_input:
             global_ini.set('authentication', ssl_part, strip_input)
@@ -62,6 +68,7 @@ def configure_basic_auth(global_ini):
     for auth_part in ['username', 'password']:
         default_cfg = global_ini.get('authentication', auth_part)
         stdout.write('{} ({}): '.format(auth_part.capitalize(), default_cfg))
+        stdout.flush()
         strip_input = stdin.readline().strip()
         if strip_input:
             global_ini.set('authentication', auth_part, strip_input)
@@ -78,6 +85,7 @@ There are three kinds of authentication types supported.
 """)
     default_auth_type = global_ini.get('authentication', 'type')
     stdout.write('Authentication Type ({}): '.format(default_auth_type))
+    stdout.flush()
     strip_input = stdin.readline().strip()
     if strip_input and strip_input in ['clientssl', 'basic', 'None']:
         global_ini.set('authentication', 'type', strip_input)

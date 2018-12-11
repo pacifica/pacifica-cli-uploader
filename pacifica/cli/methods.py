@@ -10,9 +10,12 @@ except ImportError:  # pragma: no cover python 3
 from getpass import getuser
 from os import environ
 from os.path import isfile
+from json import loads
+import requests
 from pacifica.uploader.uploader import LOGGER as UP_LOGGER
 from pacifica.uploader.metadata.policyquery import LOGGER as PQ_LOGGER
 from pacifica.uploader.metadata import MetaUpdate
+from pacifica.downloader import Downloader
 from .configure import configure_url_endpoints, configure_auth, configure_ca_bundle
 from .query import query_main
 from .upload import upload_main
@@ -40,9 +43,10 @@ def save_user_config(global_ini):
 
 def set_environment_vars(global_ini):
     """Set some environment variables to be used later."""
-    environ['POLICY_URL'] = global_ini.get('endpoints', 'policy_url')
+    environ['POLICY_URL'] = global_ini.get('endpoints', 'upload_policy_url')
     environ['INGEST_UPLOAD_URL'] = global_ini.get('endpoints', 'upload_url')
-    environ['INGEST_STATUS_URL'] = global_ini.get('endpoints', 'status_url')
+    environ['INGEST_STATUS_URL'] = global_ini.get(
+        'endpoints', 'upload_status_url')
 
 
 def generate_global_config():
@@ -55,10 +59,14 @@ def generate_global_config():
     global_ini.add_section('endpoints')
     global_ini.set('endpoints', 'upload_url',
                    'https://ingest.example.com/upload')
-    global_ini.set('endpoints', 'status_url',
+    global_ini.set('endpoints', 'upload_status_url',
                    'https://ingest.example.com/get_state')
-    global_ini.set('endpoints', 'policy_url',
+    global_ini.set('endpoints', 'upload_policy_url',
                    'https://policy.example.com/uploader')
+    global_ini.set('endpoints', 'download_url',
+                   'https://cartd.example.com')
+    global_ini.set('endpoints', 'download_policy_url',
+                   'https://policy.example.com/status/transactions/by_id')
     global_ini.set('endpoints', 'ca_bundle', 'True')
     global_ini.add_section('authentication')
     global_ini.set('authentication', 'type', '')
@@ -113,6 +121,24 @@ def generate_requests_auth(global_ini):
         }
     ret['verify'] = verify_type(global_ini.get('endpoints', 'ca_bundle'))
     return ret
+
+
+def download(args, _interface_data):
+    """Download data specified in args."""
+    set_verbose(args.verbose)
+    global_ini = generate_global_config()
+    auth = generate_requests_auth(global_ini)
+    dl_obj = Downloader(
+        args.destination,
+        global_ini.get('endpoints', 'download_url'),
+        auth=auth
+    )
+    if args.trans_id:
+        resp = requests.get('{}/{}'.format(global_ini.get('endpoints',
+                                                          'download_policy_url'), args.trans_id), **auth)
+        assert resp.status_code == 200
+        return dl_obj.transactioninfo(resp.json())
+    return dl_obj.cloudevent(loads(args.cloudevent.read()))
 
 
 def upload(args, interface_data):

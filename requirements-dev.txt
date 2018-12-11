@@ -3,6 +3,7 @@ celery
 codeclimate-test-reporter
 coverage>=4.0,<4.4
 pacifica-archiveinterface
+pacifica-cartd
 pacifica-ingest
 pacifica-metadata
 pacifica-policy

@@ -14,6 +14,13 @@ export UNIQUEID_CONFIG="$PWD/travis/uniqueid/config.cfg"
 export UNIQUEID_CPCONFIG="$PWD/travis/uniqueid/server.conf"
 pacifica-uniqueid &
 echo $! > uniqueid.pid
+export CARTD_CONFIG="$PWD/travis/cartd/config.cfg"
+export CARTD_CPCONFIG="$PWD/travis/cartd/server.conf"
+pacifica-cartd-cmd dbsync
+pacifica-cartd &
+echo $! > cart.pid
+celery -A pacifica.cartd.tasks worker --loglevel=info &
+echo $! > cartd.pid
 export INGEST_CONFIG="$PWD/travis/ingest/config.cfg"
 export INGEST_CPCONFIG="$PWD/travis/ingest/server.conf"
 pacifica-ingest &
@@ -45,3 +52,11 @@ popd
 export POLICY_CPCONFIG="$PWD/travis/policy/server.conf"
 pacifica-policy &
 echo $! > policy.pid
+curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/103
+curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/104
+readme_size=$(stat -c '%s' README.md)
+readme_sha1=$(sha1sum README.md | awk '{ print $1 }')
+echo '{ "hashsum": "'$readme_sha1'", "hashtype": "sha1", "size": '$readme_size'}' > /tmp/file-104-update.json
+curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=103'
+curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=104'
+python tests/generate_ce_stub_test.py

@@ -3,6 +3,7 @@ services:
 - postgresql
 - elasticsearch
 - rabbitmq
+- redis-server
 language: python
 stages:
 - lint

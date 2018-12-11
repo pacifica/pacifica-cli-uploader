@@ -16,8 +16,10 @@ are designed for an uploader to interact with.
 What are the endpoint URLs for the following...
 
 Upload URL (https://ingest.example.com/upload):
-Status URL (https://ingest.example.com/get_state):
-Policy URL (https://policy.example.com/uploader):
+Upload Status URL (https://ingest.example.com/get_state):
+Upload Policy URL (https://policy.example.com/uploader):
+Download URL (https://cartd.example.com):
+Download Policy URL (https://policy.example.com/status/transactions/by_id):
 
 CA certificate bundle is the path to your certificate authority bundle.
 
@@ -42,6 +44,14 @@ Password (None): password
 ```
 
 ## Example Usage
+
+### Download Examples
+
+```
+$ pacifica-cli download --destination down --transaction-id 1234
+```
+
+### Upload Examples
 
 ```
 $ pacifica-cli upload --interactive config.cfg

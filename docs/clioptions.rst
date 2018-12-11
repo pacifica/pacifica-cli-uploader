@@ -15,6 +15,20 @@ These options are common to all commands and affects behavior of the cli.
 --config    This specifies the system metadata configuration
             for use when uploading data.
 
+Download Sub-Command Options
+----------------------------
+
+The download sub-command requires interfacing with the cartd service.
+The cart requires file metadata about what to download and there is
+several methods for getting that file metadata.
+
+--destination      Download the files to this folder (default to cwd).
+
+--cloudevent       Use the cloudevents file from the notifications service to download.
+
+--transaction-id   Setup a cart from this transaction ID.
+
+
 Upload Sub-Command Options
 --------------------------
 
