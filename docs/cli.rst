@@ -14,3 +14,4 @@ CLI Python Module
 .. automodule:: pacifica.cli
    :members:
    :private-members:
+   :special-members:
