@@ -43,7 +43,10 @@ def save_user_config(global_ini):
 
 def set_environment_vars(global_ini):
     """Set some environment variables to be used later."""
-    environ['POLICY_URL'] = global_ini.get('endpoints', 'upload_policy_url')
+    environ['POLICY_UPLOADER_URL'] = global_ini.get(
+        'endpoints', 'upload_policy_url')
+    environ['POLICY_INGEST_URL'] = global_ini.get(
+        'endpoints', 'upload_validation_url')
     environ['INGEST_UPLOAD_URL'] = global_ini.get('endpoints', 'upload_url')
     environ['INGEST_STATUS_URL'] = global_ini.get(
         'endpoints', 'upload_status_url')
@@ -63,6 +66,8 @@ def generate_global_config():
                    'https://ingest.example.com/get_state')
     global_ini.set('endpoints', 'upload_policy_url',
                    'https://policy.example.com/uploader')
+    global_ini.set('endpoints', 'upload_validation_url',
+                   'https://policy.example.com/ingest')
     global_ini.set('endpoints', 'download_url',
                    'https://cartd.example.com')
     global_ini.set('endpoints', 'download_policy_url',

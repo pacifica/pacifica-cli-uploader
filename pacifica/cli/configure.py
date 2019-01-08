@@ -19,7 +19,7 @@ are designed for an uploader to interact with.
 
 What are the endpoint URLs for the following...
 """)
-    for endpnt in ['upload', 'upload_status', 'upload_policy', 'download', 'download_policy']:
+    for endpnt in ['upload', 'upload_status', 'upload_policy', 'upload_validation', 'download', 'download_policy']:
         default_url = global_ini.get('endpoints', '{}_url'.format(endpnt))
         endpnt_nice = ' '.join([
             part.capitalize() for part in endpnt.split('_')

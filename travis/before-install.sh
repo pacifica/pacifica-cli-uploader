@@ -12,6 +12,7 @@ pacifica-archiveinterface &
 echo $! > archiveinterface.pid
 export UNIQUEID_CONFIG="$PWD/travis/uniqueid/config.cfg"
 export UNIQUEID_CPCONFIG="$PWD/travis/uniqueid/server.conf"
+pacifica-uniqueid-cmd dbsync
 pacifica-uniqueid &
 echo $! > uniqueid.pid
 export CARTD_CONFIG="$PWD/travis/cartd/config.cfg"
@@ -23,6 +24,7 @@ celery -A pacifica.cartd.tasks worker --loglevel=info &
 echo $! > cartd.pid
 export INGEST_CONFIG="$PWD/travis/ingest/config.cfg"
 export INGEST_CPCONFIG="$PWD/travis/ingest/server.conf"
+pacifica-ingest-cmd dbsync
 pacifica-ingest &
 echo $! > ingest.pid
 celery -A pacifica.ingest.tasks worker --loglevel=info &

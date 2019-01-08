@@ -38,6 +38,7 @@ before_test:
     Start-Process C:\pacifica\Scripts\pacifica-archiveinterface.exe;
     $env:UNIQUEID_CONFIG = "$PWD/travis/uniqueid/config.cfg";
     $env:UNIQUEID_CPCONFIG = "$PWD/travis/uniqueid/server.conf";
+    pacifica-uniqueid-cmd dbsync;
     Start-Process C:\pacifica\Scripts\pacifica-uniqueid.exe;
     $env:CARTD_CONFIG = "$PWD/travis/cartd/config.cfg";
     $env:CARTD_CPCONFIG = "$PWD/travis/cartd/server.conf";
@@ -46,6 +47,7 @@ before_test:
     Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.cartd.tasks worker --loglevel=info -P solo -c 1" -RedirectStandardOutput ccelery-output.log -RedirectStandardError ccelery-error.log;
     $env:INGEST_CONFIG = "$PWD/travis/ingest/config.cfg";
     $env:INGEST_CPCONFIG = "$PWD/travis/ingest/server.conf";
+    pacifica-ingest-cmd dbsync;
     Start-Process C:\pacifica\Scripts\pacifica-ingest.exe;
     Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.ingest.tasks worker --loglevel=info -P solo -c 1" -RedirectStandardOutput celery-output.log -RedirectStandardError celery-error.log;
     $MD_VERSION = `pip show pacifica-metadata | grep Version: | awk '{ print $2 }';
@@ -100,10 +102,10 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --help;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli download --help;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure --help;
-    printf '\n\n\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
-    printf '\n\n\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
-    printf '\n\n\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
-    printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nhttp://localhost:8081\nhttp://localhost:8181/status/transactions/by_id\nTrue\nNone\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf '\n\n\n\n\n\n\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf '\n\n\n\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf '\n\n\n\n\n\nFalse\nbasic\nusername\npassword\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
+    printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nhttp://localhost:8181/ingest\nhttp://localhost:8081\nhttp://localhost:8181/status/transactions/by_id\nTrue\nNone\n' | coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli configure;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli download --transaction-id 67;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli download --cloudevent ce_stub.json;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --instrument 54 --logon dmlb2001;

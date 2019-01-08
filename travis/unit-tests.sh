@@ -22,15 +22,15 @@ $COV_RUN -a -m pacifica.cli configure --help
 # Configure commands
 ############################
 yes | $COV_RUN -a -m pacifica.cli configure
-printf '\n\n\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' |
+printf '\n\n\n\n\n\nTrue\nclientssl\n~/.pacifica-cli/my.key\n~/.pacifica-cli/my.cert\n' |
 $COV_RUN -a -m pacifica.cli configure
-printf '\n\n\n\n\nFalse\nbasic\nusername\npassword\n' |
+printf '\n\n\n\n\n\nFalse\nbasic\nusername\npassword\n' |
 $COV_RUN -a -m pacifica.cli configure
 
 ############################
 # Build testing config
 ############################
-printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nhttp://localhost:8081\nhttp://localhost:8181/status/transactions/by_id\nTrue\nNone\n' |
+printf 'http://localhost:8066/upload\nhttp://localhost:8066/get_state\nhttp://localhost:8181/uploader\nhttp://localhost:8181/ingest\nhttp://localhost:8081\nhttp://localhost:8181/status/transactions/by_id\nTrue\nNone\n' |
 python -m pacifica.cli configure
 
 ############################

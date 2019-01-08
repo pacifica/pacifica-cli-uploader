@@ -18,6 +18,7 @@ What are the endpoint URLs for the following...
 Upload URL (https://ingest.example.com/upload):
 Upload Status URL (https://ingest.example.com/get_state):
 Upload Policy URL (https://policy.example.com/uploader):
+Upload Validation URL (https://policy.example.com/ingest):
 Download URL (https://cartd.example.com):
 Download Policy URL (https://policy.example.com/status/transactions/by_id):
 
