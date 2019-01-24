@@ -86,6 +86,7 @@ install:
     python -m pip install pip setuptools wheel --upgrade;
     pip install -r requirements-dev.txt;
     pip install celery[redis] 'redis<3.0';
+    echo "Done";
 
 build: off
 

@@ -53,6 +53,6 @@ def compressor_generator(compressor_type):
         def flush(self):
             """Flush the data internally if required."""
             if self._flush_passthru:
-                return ''
+                return bytearray()
             return self._comp.flush()
     return Compressor()
