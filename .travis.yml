@@ -1,21 +1,14 @@
 sudo: required
 services:
 - postgresql
-- elasticsearch
 - rabbitmq
 - redis-server
 language: python
 stages:
 - lint
 - test
+- test-docker
 - deploy
-addons:
-  apt:
-    sources:
-    - elasticsearch-5.x
-    packages:
-    - elasticsearch
-    - oracle-java8-set-default
 cache: pip
 ".before_install": &3
 - bash -xe travis/before-install.sh
@@ -47,6 +40,31 @@ jobs:
     before_install: *3
     install: *1
     script: *4
+  - stage: test-docker
+    sudo: required
+    python: 3.6
+    services:
+    - docker
+    script:
+    - |
+      docker-compose build --pull;
+      docker-compose pull;
+      docker-compose up -d;
+      docker build -t pacifica/cli .;
+    - |
+      MAX_TRIES=60;
+      HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
+      while [[ $HTTP_CODE != 200 && $MAX_TRIES > 0 ]] ; do
+        sleep 2;
+        HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
+        MAX_TRIES=$(( MAX_TRIES - 1 ));
+      done;
+      docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys
+    - |
+      docker-compose exec metadataserver /bin/bash -c 'cd /usr/src/app/tests; python test_files/loadit_test.py';
+      curl http://127.0.0.1:8181/status/users/search/dmlb2001/simple;
+      docker run -t --rm --network=pacificacli_default pacifica/cli upload --logon 10 tests;
+      docker run -t --rm --network=pacificacli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
   - stage: deploy
     services: []
     language: python

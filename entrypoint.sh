@@ -1,3 +1,5 @@
 #!/bin/bash -e
-printf $UPLOAD_URL'\n'$STATE_URL'\n'$POLICY_URL'\nTrue\nNone\n' | pacifica-cli configure
+cat > /etc/pacifica-cli/config.ini <<EOF
+EOF
+y | pacifica-cli configure
 exec pacifica-cli "$@"

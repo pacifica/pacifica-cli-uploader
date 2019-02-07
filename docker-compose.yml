@@ -1,0 +1,147 @@
+version: '3.3'
+volumes:
+  ingestdata:
+  cartddata:
+services:
+  ingestfrontend:
+    image: pacifica/ingest-frontend
+    links:
+    - uniqueid
+    - metadataserver
+    - archiveinterface
+    - policyserver
+    - ingestrabbit
+    - ingestmysql
+    ports:
+    - 8066:8066
+    volumes:
+    - ingestdata:/srv
+    environment:
+      VOLUME_PATH: /srv
+      PEEWEE_ADDR: ingestmysql
+      BROKER_URL: pyamqp://ingestrabbit
+      UNIQUEID_URL: http://uniqueid:8051
+      POLICY_INGEST_URL: http://policyserver:8181/ingest
+      METADATA_INGEST_URL: http://metadataserver:8121/ingest
+      ARCHIVEINTERFACE_URL: http://archiveinterface:8080
+
+  ingestbackend:
+    image: pacifica/ingest-backend
+    links:
+    - uniqueid
+    - metadataserver
+    - archiveinterface
+    - policyserver
+    - ingestrabbit
+    - ingestmysql
+    volumes:
+    - ingestdata:/srv
+    environment:
+      VOLUME_PATH: /srv
+      PEEWEE_ADDR: ingestmysql
+      BROKER_URL: pyamqp://ingestrabbit
+      UNIQUEID_URL: http://uniqueid:8051
+      POLICY_INGEST_URL: http://policyserver:8181/ingest
+      METADATA_INGEST_URL: http://metadataserver:8121/ingest
+      ARCHIVEINTERFACE_URL: http://archiveinterface:8080
+
+  ingestmysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pacifica_ingest
+      MYSQL_USER: ingest
+      MYSQL_PASSWORD: ingest
+
+  ingestrabbit:
+    image: rabbitmq
+
+  uniqueidmysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pacifica_uniqueid
+      MYSQL_USER: uniqueid
+      MYSQL_PASSWORD: uniqueid
+
+  uniqueid:
+    image: pacifica/uniqueid
+    links:
+    - uniqueidmysql:mysql
+    environment:
+      PEEWEE_ADDR: mysql
+
+  archiveinterface:
+    image: pacifica/archiveinterface
+
+  policyserver:
+    image: pacifica/policy
+    ports:
+    - 8181:8181
+    links:
+    - metadataserver:metadata
+    environment:
+      METADATA_URL: http://metadata:8121
+      STATUS_URL: http://metadata:8121/groups
+
+  metadatadb:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: metadata
+      POSTGRES_DB: pacifica_metadata
+      POSTGRES_USER: pacifica
+
+  metadataserver:
+    image: pacifica/metadata
+    links:
+    - metadatadb
+    environment:
+      PEEWEE_DATABASE: pacifica_metadata
+      PEEWEE_USER: pacifica
+      PEEWEE_ADDR: metadatadb
+      PEEWEE_PORT: 5432
+      PEEWEE_PROTO: postgres
+      PEEWEE_PASS: metadata
+
+  cartdrabbit:
+    image: rabbitmq
+
+  cartdmysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pacifica_cartd
+      MYSQL_USER: cartd
+      MYSQL_PASSWORD: cartd
+
+  cartdbackend:
+    image: pacifica/cartd-backend
+    links:
+    - cartdrabbit:amqp
+    - cartdmysql:mysql
+    - archiveinterface:archivei
+    volumes:
+    - cartddata:/shared
+    environment:
+      PEEWEE_ADDR: mysql
+      BROKER_URL: pyamqp://guest:guest@amqp:5672//
+      ARCHIVE_INTERFACE_URL: http://archivei:8080/
+      VOLUME_PATH: /shared/
+      LRU_BUFFER_TIME: 0
+
+  cartdfrontend:
+    image: pacifica/cartd-frontend
+    ports:
+    - 8081:8081
+    links:
+    - cartdrabbit:amqp
+    - cartdmysql:mysql
+    - archiveinterface:archivei
+    volumes:
+    - cartddata:/shared
+    environment:
+      PEEWEE_ADDR: mysql
+      BROKER_URL: pyamqp://guest:guest@amqp:5672//
+      ARCHIVE_INTERFACE_URL: http://archivei:8080/
+      VOLUME_PATH: /shared/
+      LRU_BUFFER_TIME: 0

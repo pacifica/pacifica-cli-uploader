@@ -8,7 +8,7 @@ try:  # try loading python 2 module first
 except ImportError:  # pragma: no cover python 3
     from configparser import ConfigParser
 from getpass import getuser
-from os import environ
+from os import environ, getenv
 from os.path import isfile
 from json import loads
 import requests
@@ -60,25 +60,53 @@ def generate_global_config():
     global_ini.add_section('globals')
     global_ini.set('globals', 'interactive', 'False')
     global_ini.add_section('endpoints')
-    global_ini.set('endpoints', 'upload_url',
-                   'https://ingest.example.com/upload')
-    global_ini.set('endpoints', 'upload_status_url',
-                   'https://ingest.example.com/get_state')
-    global_ini.set('endpoints', 'upload_policy_url',
-                   'https://policy.example.com/uploader')
-    global_ini.set('endpoints', 'upload_validation_url',
-                   'https://policy.example.com/ingest')
-    global_ini.set('endpoints', 'download_url',
-                   'https://cartd.example.com')
-    global_ini.set('endpoints', 'download_policy_url',
-                   'https://policy.example.com/status/transactions/by_id')
+    global_ini.set(
+        'endpoints', 'upload_url',
+        getenv('UPLOAD_URL', 'https://ingest.example.com/upload')
+    )
+    global_ini.set(
+        'endpoints', 'upload_status_url',
+        getenv('UPLOAD_STATUS_URL', 'https://ingest.example.com/get_state')
+    )
+    global_ini.set(
+        'endpoints', 'upload_policy_url',
+        getenv('UPLOAD_POLICY_URL', 'https://policy.example.com/uploader')
+    )
+    global_ini.set(
+        'endpoints', 'upload_validation_url',
+        getenv('UPLOAD_VALIDATION_URL', 'https://policy.example.com/ingest')
+    )
+    global_ini.set(
+        'endpoints', 'download_url',
+        getenv('DOWNLOAD_URL', 'https://cartd.example.com')
+    )
+    global_ini.set(
+        'endpoints', 'download_policy_url',
+        getenv('DOWNLOAD_POLICY_URL',
+               'https://policy.example.com/status/transactions/by_id')
+    )
     global_ini.set('endpoints', 'ca_bundle', 'True')
     global_ini.add_section('authentication')
-    global_ini.set('authentication', 'type', '')
-    global_ini.set('authentication', 'username', '')
-    global_ini.set('authentication', 'password', '')
-    global_ini.set('authentication', 'cert', '')
-    global_ini.set('authentication', 'key', '')
+    global_ini.set(
+        'authentication', 'type',
+        getenv('AUTHENTICATION_TYPE', 'None')
+    )
+    global_ini.set(
+        'authentication', 'username',
+        getenv('AUTHENTICATION_USERNAME', '')
+    )
+    global_ini.set(
+        'authentication', 'password',
+        getenv('AUTHENTICATION_PASSWORD', '')
+    )
+    global_ini.set(
+        'authentication', 'cert',
+        getenv('AUTHENTICATION_CERT', '')
+    )
+    global_ini.set(
+        'authentication', 'key',
+        getenv('AUTHENTICATION_KEY', '')
+    )
     LOGGER.debug('System Config: %s', system_config)
     LOGGER.debug('User Config: %s', user_config)
     if isfile(system_config):
