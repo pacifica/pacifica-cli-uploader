@@ -1,7 +1,7 @@
 # Pacifica CLI Uploader
 
-[![PyPi](https://img.shields.io/pypi/v/pacifica-cli.svg)]
-[![Read the Docs](https://readthedocs.org/projects/pacifica-cli/badge/?version=latest)]
+![PyPi](https://img.shields.io/pypi/v/pacifica-cli.svg)
+![Read the Docs](https://readthedocs.org/projects/pacifica-cli/badge/?version=latest)
 [![Build Status](https://travis-ci.org/pacifica/pacifica-cli.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cli)
 [![Build Status](https://ci.appveyor.com/api/projects/status/0ddinx1bdfroptf7?svg=true)](https://ci.appveyor.com/project/dmlb2000/pacifica-cli)
 [![Code Climate](https://codeclimate.com/github/pacifica/pacifica-cli/badges/gpa.svg)](https://codeclimate.com/github/pacifica/pacifica-cli)
