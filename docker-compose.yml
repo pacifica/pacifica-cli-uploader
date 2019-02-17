@@ -131,8 +131,6 @@ services:
 
   cartdfrontend:
     image: pacifica/cartd-frontend
-    ports:
-    - 8081:8081
     links:
     - cartdrabbit:amqp
     - cartdmysql:mysql

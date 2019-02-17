@@ -11,7 +11,7 @@ The system configuration is processed first and the two directories are,
 client uses that as the system default.
 
 The user configuration is processed second, if found. The directory the
-client looks in by default is `~/.pacifica-cli/config.ini`. The `~`
+client looks in by default is `~/.pacifica_cli/config.ini`. The `~`
 translates to the users home directory on any platform.
 
 ## System Metadata

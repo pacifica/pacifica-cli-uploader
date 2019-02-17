@@ -55,7 +55,7 @@ $ pacifica-cli download --destination down --transaction-id 1234
 ### Upload Examples
 
 ```
-$ pacifica-cli upload --interactive config.cfg
+$ pacifica-cli upload --interactive test_file_upload.txt
 
 Instrument ID - Select an ID
 =====================================
