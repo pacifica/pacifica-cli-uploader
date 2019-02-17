@@ -82,8 +82,8 @@ def main():
         help='Retry and upload from an existing bundle.', required=False
     )
     upload_parser.add_argument(
-        '--local-compress', dest='localcompress', metavar='COMP',
-        help='Compress the local saved file.', required=False,
+        '--local-compress', dest='localcompress', metavar='TYPE',
+        help='Compress the local saved file with TYPE of bzip2 or gzip.', required=False,
         type=arg_to_compressor_obj, default=arg_to_compressor_obj()
     )
     upload_parser.add_argument(
