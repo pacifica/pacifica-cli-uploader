@@ -162,16 +162,15 @@ def download(args, _interface_data):
     global_ini = generate_global_config()
     auth = generate_requests_auth(global_ini)
     dl_obj = Downloader(
-        args.destination,
-        global_ini.get('endpoints', 'download_url'),
+        cart_api_url=global_ini.get('endpoints', 'download_url'),
         auth=auth
     )
     if args.trans_id:
         resp = requests.get('{}/{}'.format(global_ini.get('endpoints',
                                                           'download_policy_url'), args.trans_id), **auth)
         assert resp.status_code == 200
-        return dl_obj.transactioninfo(resp.json())
-    return dl_obj.cloudevent(loads(args.cloudevent.read()))
+        return dl_obj.transactioninfo(args.destination, resp.json())
+    return dl_obj.cloudevent(args.destination, loads(args.cloudevent.read()))
 
 
 def upload(args, interface_data):
