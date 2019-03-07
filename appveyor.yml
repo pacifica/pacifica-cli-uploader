@@ -85,7 +85,7 @@ install:
     C:\pacifica\Scripts\activate.ps1;
     python -m pip install pip setuptools wheel --upgrade;
     pip install -r requirements-dev.txt;
-    pip install celery[redis] 'redis<3.0';
+    pip install celery[redis] 'redis';
     echo "Done";
 
 build: off
