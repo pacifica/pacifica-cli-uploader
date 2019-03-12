@@ -64,7 +64,7 @@ Instrument ID - Select an ID
 104 Transmogriscope - Nanoscale Transmogriscope
 Select ID (54): 54
 
-Proposal ID - Select an ID
+Project ID - Select an ID
 =====================================
 
 1234a - Pacifica Development (active no close)

@@ -53,7 +53,7 @@ curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -
 $COV_RUN -a -m pacifica.cli upload --dry-run --instrument 54 || true
 $COV_RUN -a -m pacifica.cli upload --dry-run --instrument 9876 || true
 $COV_RUN -a -m pacifica.cli upload --dry-run --local-save retry.tar --local-compress BLAH || true
-$COV_RUN -a -m pacifica.cli upload --dry-run --logon dmlb2001 --proposal-regex 'expired closed and end'
+$COV_RUN -a -m pacifica.cli upload --dry-run --logon dmlb2001 --project-regex 'expired closed and end'
 
 ############################
 # Upload commands
