@@ -11,12 +11,19 @@ cp -r ../README.md ../travis .
 # Help commands
 ############################
 COV_RUN="coverage run --include=*/site-packages/pacifica/cli/*"
-$COV_RUN -m pacifica.cli --config ../travis/uploader.json --help
+$COV_RUN -m pacifica.cli --help
+$COV_RUN -a -m pacifica.cli upload --help
+$COV_RUN -a -m pacifica.cli download --help
+$COV_RUN -a -m pacifica.cli --config ../travis/uploader.json --help
 $COV_RUN -a -m pacifica.cli --config=../travis/uploader.json --help
 export UPLOADER_CONFIG=$PWD/../travis/uploader.json
 $COV_RUN -a -m pacifica.cli upload --help
 $COV_RUN -a -m pacifica.cli download --help
 $COV_RUN -a -m pacifica.cli configure --help
+unset UPLOADER_CONFIG
+cp $PWD/../travis/uploader.json ~/.pacifica_cli/uploader.json
+$COV_RUN -a -m pacifica.cli upload --help
+export UPLOADER_CONFIG=$PWD/../travis/uploader.json
 
 ############################
 # Configure commands

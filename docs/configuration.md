@@ -21,6 +21,16 @@ environment variable `UPLOADER_CONFIG`. By default the environment
 variable is set to `uploader.json`. However, it could be managed at a
 system level or changed on the command line by the `--config` option.
 
+The directories the `UPLOADER_CONFIG` are looked for in order are:
+
+ - `/etc/pacifica-cli/uploader.json`
+ - `VIRTUAL_ENV_ROOT/pacifica-cli/uploader.json`
+ - `~/.pacifica_cli/uploader.json`
+ - `$PWD/uploader.json`
+
+The command line is evaluated last so it will override any of the
+previous paths.
+
 The contents of the metadata configuration file is complex and should
 be read from
 [here](https://pacifica-uploader.readthedocs.io/en/latest/metadataconfig.html).

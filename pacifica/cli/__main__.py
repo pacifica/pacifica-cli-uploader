@@ -3,10 +3,10 @@
 """The CLI module contains all the logic needed to run a CLI."""
 import sys
 import argparse
-from os import getenv
+from os import getenv, path
 from pacifica.uploader.metadata import metadata_decode
 from .methods import upload, configure, download
-from .utils import system_config_path, compressor_generator
+from .utils import system_config_path, user_config_path, compressor_generator
 
 
 def arg_to_compressor_obj(str_obj=None):
@@ -35,6 +35,35 @@ def mangle_config_argument(argv):
     return (None, argv)
 
 
+def parse_uploader_config(upload_parser):
+    """Find the uploader metadata config and parse arguments out of it."""
+    upload_file_name = 'uploader.json'
+    default_config = getenv(
+        'UPLOADER_CONFIG', system_config_path(upload_file_name))
+    if default_config == upload_file_name and path.isfile(user_config_path(upload_file_name)):
+        default_config = user_config_path(upload_file_name)
+    config_file, argv = mangle_config_argument(sys.argv)
+    if not config_file:
+        config_file = default_config
+    if path.isfile(config_file):
+        config_data = metadata_decode(open(config_file).read())
+        for config_part in config_data:
+            if not config_part.value:
+                upload_parser.add_argument(
+                    '--{}-regex'.format(config_part.metaID), required=False,
+                    dest='{}_regex'.format(config_part.metaID),
+                    help='{} regular expression match.'.format(
+                        config_part.displayTitle)
+                )
+                upload_parser.add_argument(
+                    '--{}'.format(config_part.metaID), '-{}'.format(
+                        config_part.metaID[0]),
+                    help=config_part.displayTitle, required=False
+                )
+        return config_file, argv, config_data
+    return default_config, sys.argv, None
+
+
 def main():
     """Main method to deal with command line argument parsing."""
     parser = argparse.ArgumentParser()
@@ -46,25 +75,11 @@ def main():
     download_parser = subparsers.add_parser(
         'download', help='download help', description='perform download')
 
-    default_config = getenv(
-        'UPLOADER_CONFIG', system_config_path('uploader.json'))
-    config_file, argv = mangle_config_argument(sys.argv)
-    if not config_file:
-        config_file = default_config
-    config_data = metadata_decode(open(config_file).read())
-    for config_part in config_data:
-        if not config_part.value:
-            upload_parser.add_argument(
-                '--{}-regex'.format(config_part.metaID), required=False,
-                dest='{}_regex'.format(config_part.metaID),
-                help='{} regular expression match.'.format(
-                    config_part.displayTitle)
-            )
-            upload_parser.add_argument(
-                '--{}'.format(config_part.metaID), '-{}'.format(
-                    config_part.metaID[0]),
-                help=config_part.displayTitle, required=False
-            )
+    default_config, argv, config_data = parse_uploader_config(upload_parser)
+    parser.add_argument(
+        '--config', dest='config', default=default_config,
+        help='Upload configuration metadata.', required=False
+    )
     parser.add_argument(
         '--verbose', dest='verbose', default='info',
         help='Enable verbose logging.', required=False

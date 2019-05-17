@@ -1,7 +1,7 @@
 -r requirements.txt
+attrs>=17.4
 celery
-codeclimate-test-reporter
-coverage>=4.0,<4.4
+coverage
 pacifica-archiveinterface
 pacifica-cartd
 pacifica-ingest
