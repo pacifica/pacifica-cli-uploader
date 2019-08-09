@@ -1,7 +1,7 @@
 sudo: required
+dist: xenial
 services:
 - postgresql
-- rabbitmq
 - redis-server
 language: python
 stages:
@@ -63,8 +63,8 @@ jobs:
     - |
       docker-compose exec metadataserver /bin/bash -c 'cd /usr/src/app/tests; python test_files/loadit_test.py';
       curl http://127.0.0.1:8181/status/users/search/dmlb2001/simple;
-      docker run -t --rm --network=pacificacli_default pacifica/cli upload --logon 10 tests;
-      docker run -t --rm --network=pacificacli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
+      docker run -t --rm --network=pacifica-cli_default pacifica/cli upload --logon 10 tests;
+      docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
   - stage: deploy
     services: []
     language: python

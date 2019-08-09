@@ -58,3 +58,5 @@ target/
 
 # GNU Dia
 *.dia~
+
+.vscode/

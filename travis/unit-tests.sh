@@ -71,6 +71,8 @@ $COV_RUN -a -m pacifica.cli upload README.md
 $COV_RUN -a -m pacifica.cli upload travis
 $COV_RUN -a -m pacifica.cli upload --tar-in-tar README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar README.md
+tar -xf retry.tar metadata.txt
+python travis/check_metadata_test.py
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md

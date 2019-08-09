@@ -22,6 +22,8 @@ before_test:
 - ps: >
     $env:PATH = "${env:PGSQL_PATH}\bin;${env:PATH}";
     createdb pacifica_metadata;
+    createdb pacifica_ingest;
+    createdb pacifica_cartd;
     C:\pacifica\Scripts\activate.ps1;
     mkdir C:\ingest;
     mkdir C:\archive;
@@ -40,12 +42,12 @@ before_test:
     $env:UNIQUEID_CPCONFIG = "$PWD/travis/uniqueid/server.conf";
     pacifica-uniqueid-cmd dbsync;
     Start-Process C:\pacifica\Scripts\pacifica-uniqueid.exe;
-    $env:CARTD_CONFIG = "$PWD/travis/cartd/config.cfg";
+    $env:CARTD_CONFIG = "$PWD/travis/cartd/config-appveyor.cfg";
     $env:CARTD_CPCONFIG = "$PWD/travis/cartd/server.conf";
     pacifica-cartd-cmd dbsync;
     Start-Process C:\pacifica\Scripts\pacifica-cartd.exe;
     Start-Process C:\pacifica\Scripts\celery.exe -ArgumentList "-A pacifica.cartd.tasks worker --loglevel=info -P solo -c 1" -RedirectStandardOutput ccelery-output.log -RedirectStandardError ccelery-error.log;
-    $env:INGEST_CONFIG = "$PWD/travis/ingest/config.cfg";
+    $env:INGEST_CONFIG = "$PWD/travis/ingest/config-appveyor.cfg";
     $env:INGEST_CPCONFIG = "$PWD/travis/ingest/server.conf";
     pacifica-ingest-cmd dbsync;
     Start-Process C:\pacifica\Scripts\pacifica-ingest.exe;

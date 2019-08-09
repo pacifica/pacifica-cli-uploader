@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 pip install -r requirements-dev.txt
 psql -c 'create database pacifica_metadata;' -U postgres
+psql -c 'create database pacifica_ingest;' -U postgres
+psql -c 'create database pacifica_cartd;' -U postgres
 export PEEWEE_URL="postgres://postgres:@127.0.0.1:5432/pacifica_metadata"
 export METADATA_CPCONFIG="$PWD/travis/metadata/server.conf"
 pacifica-metadata-cmd dbsync
@@ -15,14 +17,14 @@ export UNIQUEID_CPCONFIG="$PWD/travis/uniqueid/server.conf"
 pacifica-uniqueid-cmd dbsync
 pacifica-uniqueid &
 echo $! > uniqueid.pid
-export CARTD_CONFIG="$PWD/travis/cartd/config.cfg"
+export CARTD_CONFIG="$PWD/travis/cartd/config-travis.cfg"
 export CARTD_CPCONFIG="$PWD/travis/cartd/server.conf"
 pacifica-cartd-cmd dbsync
 pacifica-cartd &
 echo $! > cart.pid
 celery -A pacifica.cartd.tasks worker --loglevel=info &
 echo $! > cartd.pid
-export INGEST_CONFIG="$PWD/travis/ingest/config.cfg"
+export INGEST_CONFIG="$PWD/travis/ingest/config-travis.cfg"
 export INGEST_CPCONFIG="$PWD/travis/ingest/server.conf"
 pacifica-ingest-cmd dbsync
 pacifica-ingest &

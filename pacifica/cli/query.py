@@ -58,9 +58,9 @@ def format_query_results(md_update, query_obj):
     valid_ids = []
     display_data = {}
     for obj in md_update[query_obj.metaID].query_results:
-        valid_ids.append(text_type(obj['_id']))
+        valid_ids.append(text_type(obj[query_obj.valueField]))
         display_data[text_type(
-            obj['_id'])] = md_update[query_obj.metaID].displayFormat.format(**obj)
+            obj[query_obj.valueField])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     return (valid_ids, display_data)
 
 
@@ -152,14 +152,23 @@ def filter_results(md_update, query_obj, regex):
     filtered_results = []
     for index in range(len(query_obj.query_results)):
         res = query_obj.query_results[index]
-        if reg_engine.search(display_data[text_type(res['_id'])]):
+        if reg_engine.search(display_data[text_type(res[query_obj.valueField])]):
             filtered_results.append(query_obj.query_results[index])
     md_update[query_obj.metaID] = query_obj._replace(
         query_results=filtered_results)
     valid_ids, display_data = format_query_results(md_update, query_obj)
     if valid_ids and query_obj.value not in valid_ids:
         md_update[query_obj.metaID] = query_obj._replace(
-            value=filtered_results[0]['_id'])
+            value=filtered_results[0][query_obj.valueField])
+
+
+def remove_results(md_update):
+    """Remove the query results before passing it on."""
+    for query_obj in md_update:
+        for result in query_obj.query_results:
+            if result[query_obj.valueField] == query_obj.value:
+                md_update[query_obj.metaID] = query_obj._replace(query_results=[result])
+                continue
 
 
 def query_main(md_update, args):
@@ -182,4 +191,5 @@ def query_main(md_update, args):
         if not md_update[query_obj.metaID].value:
             raise RuntimeError(
                 text_type('Could not find value for {}').format(query_obj.metaID))
+    remove_results(md_update)
     return md_update
