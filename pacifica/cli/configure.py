@@ -64,7 +64,7 @@ def configure_client_ssl(global_ini):
 
 
 def configure_basic_auth(global_ini):
-    """Query and set the client ssl key and cert."""
+    """Query and set the client username and password."""
     for auth_part in ['username', 'password']:
         default_cfg = global_ini.get('authentication', auth_part)
         stdout.write('{} ({}): '.format(auth_part.capitalize(), default_cfg))
