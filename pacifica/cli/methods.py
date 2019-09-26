@@ -146,12 +146,26 @@ def generate_requests_auth(global_ini):
             )
         }
     elif auth_type == 'basic':
-        ret = {
-            'auth': (
-                global_ini.get('authentication', 'username'),
-                global_ini.get('authentication', 'password')
-            )
-        }
+        username = getenv('AUTHENTICATION_USERNAME', None)
+        password = getenv('AUTHENTICATION_PASSWORD', None)
+        if username is not None and password is not None:
+            # if available, use env vars for username and password
+            ret = {
+                'auth': (
+                    username,
+                    password
+                )
+            }
+        # TODO: Add command-line option for password (local variable)
+        # This will take higher precedence over the environment variable
+        else:
+            # else use global_ini config file
+            ret = {
+                'auth': (
+                    global_ini.get('authentication', 'username'),
+                    global_ini.get('authentication', 'password')
+                )
+            }
     ret['verify'] = verify_type(global_ini.get('endpoints', 'ca_bundle'))
     return ret
 
