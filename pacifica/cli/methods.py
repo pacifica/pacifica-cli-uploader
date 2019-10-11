@@ -156,7 +156,7 @@ def generate_requests_auth(global_ini):
                     password
                 )
             }
-        # TODO: Add command-line option for password (local variable)
+        # Add command-line option for password (local variable)
         # This will take higher precedence over the environment variable
         else:
             # else use global_ini config file
