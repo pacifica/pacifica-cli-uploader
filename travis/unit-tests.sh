@@ -82,8 +82,8 @@ $COV_RUN -a -m pacifica.cli upload --nowait README.md
 ############################
 # Basic Auth Env Variables commands
 ############################
-export AUTHENTICATION_USERNAME=''
-export AUTHENTICATION_PASSWORD=''
+export AUTHENTICATION_USERNAME='test'
+export AUTHENTICATION_PASSWORD='test'
 $COV_RUN -a -m pacifica.cli download --transaction-id 67
 $COV_RUN -a -m pacifica.cli upload README.md
 
