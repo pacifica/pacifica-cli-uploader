@@ -45,6 +45,11 @@ python -m pacifica.cli configure
 ############################
 $COV_RUN -a -m pacifica.cli download --transaction-id 67
 $COV_RUN -a -m pacifica.cli download --cloudevent ce_stub.json
+export AUTHENTICATION_USERNAME='test'
+export AUTHENTICATION_PASSWORD='test'
+$COV_RUN -a -m pacifica.cli download --transaction-id 67
+unset AUTHENTICATION_USERNAME
+unset AUTHENTICATION_PASSWORD
 
 ############################
 # Query commands
@@ -78,14 +83,11 @@ $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip 
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md
 $COV_RUN -a -m pacifica.cli upload --local-retry retry.tar
 $COV_RUN -a -m pacifica.cli upload --nowait README.md
-
-############################
-# Basic Auth Env Variables commands
-############################
 export AUTHENTICATION_USERNAME='test'
 export AUTHENTICATION_PASSWORD='test'
-$COV_RUN -a -m pacifica.cli download --transaction-id 67
 $COV_RUN -a -m pacifica.cli upload README.md
+unset AUTHENTICATION_USERNAME
+unset AUTHENTICATION_PASSWORD
 
 ############################
 # PyTest coverage
