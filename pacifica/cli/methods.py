@@ -146,8 +146,8 @@ def generate_requests_auth(global_ini):
             )
         }
     elif auth_type == 'basic':
-        username = getenv('AUTHENTICATION_USERNAME', global_ini.get('authentication', 'username')
-        password = getenv('AUTHENTICATION_PASSWORD', global_ini.get('authentication', 'password')
+        username = getenv('AUTHENTICATION_USERNAME', global_ini.get('authentication', 'username'))
+        password = getenv('AUTHENTICATION_PASSWORD', global_ini.get('authentication', 'password'))
         ret = {
             'auth': (
                 username,
