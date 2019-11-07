@@ -149,11 +149,9 @@ def generate_requests_auth(global_ini):
         ret = {
             'auth': (
                 getenv('AUTHENTICATION_USERNAME', \
-                    global_ini.get('authentication', 'username')
-                ),
+                    global_ini.get('authentication', 'username')),
                 getenv('AUTHENTICATION_PASSWORD', \
-                    global_ini.get('authentication', 'password')
-                )
+                    global_ini.get('authentication', 'password'))
             )
         }
     ret['verify'] = verify_type(global_ini.get('endpoints', 'ca_bundle'))
