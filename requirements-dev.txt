@@ -1,5 +1,6 @@
 -r requirements.txt
 attrs>=17.4
+autopep8
 celery
 coverage
 pacifica-archiveinterface
