@@ -2,17 +2,25 @@ sudo: required
 dist: bionic
 language: python
 python: 3.6
-services:
-- postgresql
-- redis-server
 stages:
 - lint
 - test
 - test-docker
 - deploy
 cache: pip
-before_install:
-- bash -xe travis/before-install.sh
+before_script:
+  - pip install ansible
+  - ansible-galaxy install pacifica.ansible_pacifica pacifica.ansible_travis
+  - ansible-playbook ~/.ansible/roles/pacifica.ansible_travis/molecule/common/playbook.yml -i ~/.ansible/roles/pacifica.ansible_travis/molecule/common/inventory.yml -e "ansible_python_interpreter=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/python travis_virtualenv=python${TRAVIS_PYTHON_VERSION} github_repository=cli"
+  - |
+    curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/103
+    curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/104
+    readme_size=$(stat -c '%s' README.md)
+    readme_sha1=$(sha1sum README.md | awk '{ print $1 }')
+    echo '{ "hashsum": "'$readme_sha1'", "hashtype": "sha1", "size": '$readme_size'}' > /tmp/file-104-update.json
+    curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=103'
+    curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=104'
+  - python tests/generate_ce_stub_test.py
 install:
 - pip install -r requirements-dev.txt
 script:
@@ -21,13 +29,13 @@ script:
 jobs:
   include:
   - stage: lint
-    before_install: skip
+    before_script: skip
     script:
     - pre-commit run -a
     - radon cc pacifica
   - stage: test
   - stage: test-docker
-    before_install: skip
+    before_script: skip
     sudo: required
     services:
     - docker
@@ -52,8 +60,7 @@ jobs:
       docker run -t --rm --network=pacifica-cli_default pacifica/cli upload --logon 10 tests;
       docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
   - stage: deploy
-    services: []
-    before_install: skip
+    before_script: skip
     script: skip
     deploy:
       skip_cleanup: true
