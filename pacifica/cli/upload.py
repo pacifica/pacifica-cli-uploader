@@ -215,7 +215,7 @@ def invoke_uploader(md_update, rfd, content_length):
     up_obj = Uploader(auth=md_update.get_auth())
 
     # pylint: disable=too-few-public-methods
-    class FakeFileObj(object):
+    class FakeFileObj:
         """Fake out the file object."""
 
         def __init__(self, rfd, rfd_len):

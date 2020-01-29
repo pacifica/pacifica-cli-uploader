@@ -12,7 +12,7 @@ import re
 def set_query_obj(dep_meta_ids, md_update, obj):
     """Return the query object or false."""
     if dep_meta_ids:
-        if set([bool(md_update[dep_id].value) for dep_id in dep_meta_ids]) == set([True]):
+        if {bool(md_update[dep_id].value) for dep_id in dep_meta_ids} == {True}:
             return obj
         return None
     return obj

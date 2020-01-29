@@ -4,6 +4,8 @@
 import sys
 from os import makedirs, sep
 from os.path import expanduser, join, isdir, isfile
+from bz2 import BZ2Compressor
+from zlib import compress
 
 
 def system_config_path(config_file):
@@ -26,18 +28,16 @@ def user_config_path(config_file):
 
 def compressor_generator(compressor_type):
     """Return a compressor based on type, bzip2, gzip."""
-    class Compressor(object):
+    class Compressor:
         """Compressor object has consistent interface for compressing data."""
 
         def __init__(self):
             """Constructor to build the appropriate compressor type."""
             if compressor_type == 'bzip2':
-                from bz2 import BZ2Compressor
                 self._comp = BZ2Compressor(9)
                 self._comp_func = self._comp.compress
                 self._flush_passthru = False
             elif compressor_type == 'gzip':
-                from zlib import compress
                 self._comp = None
                 self._comp_func = lambda x: compress(x, 9)
                 self._flush_passthru = True

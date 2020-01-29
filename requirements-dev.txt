@@ -1,7 +1,5 @@
 -r requirements.txt
-attrs>=17.4
 autopep8
-celery
 coverage
 pacifica-archiveinterface
 pacifica-cartd
@@ -9,13 +7,9 @@ pacifica-ingest
 pacifica-metadata
 pacifica-policy
 pacifica-uniqueid
-pager
 pep257
 pre-commit
-pylint<2.0
+pylint
 pytest
 radon
 recommonmark
-redis
-requests
-six
