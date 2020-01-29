@@ -18,12 +18,12 @@ setup(
     description='Pacifica CLI Tool',
     author='David Brown',
     author_email='david.brown@pnnl.gov',
-    url='https://pypi.python.org/pypi/pacifica-cli/',
+    url='https://github.com/pacifica/pacifica-cli/',
     long_description=open(path.join(
         path.abspath(path.dirname(__file__)),
         'README.md')).read(),
     long_description_content_type='text/markdown',
-    packages=find_packages(),
+    packages=find_packages(include=['pacifica.*']),
     namespace_packages=['pacifica'],
     entry_points={
         'console_scripts': ['pacifica-cli=pacifica.cli.__main__:main'],
