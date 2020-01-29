@@ -1,3 +1,4 @@
+jsonschema
 pacifica-downloader
 pacifica-namespace
 pacifica-uploader

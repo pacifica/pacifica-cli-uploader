@@ -25,6 +25,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(include=['pacifica.*']),
     namespace_packages=['pacifica'],
+    package_data={'': ['*.json']},
     entry_points={
         'console_scripts': ['pacifica-cli=pacifica.cli.__main__:main'],
     },
