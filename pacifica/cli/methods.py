@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from getpass import getuser
 from os import environ, getenv
 from os.path import isfile
+import warnings
 from json import loads
 import requests
 from pacifica.uploader.uploader import LOGGER as UP_LOGGER
@@ -141,6 +142,17 @@ def generate_requests_auth(global_ini):
                 global_ini.get('authentication', 'cert'),
                 global_ini.get('authentication', 'key')
             )
+        }
+    elif auth_type == 'gssapi':  # pragma: no cover don't have kerberos available to test with
+        # pylint: disable=import-outside-toplevel
+        try:
+            from requests_gssapi import HTTPSPNEGOAuth
+        except ImportError as ex:
+            warnings.warn('Unable to import requests_gssapi please `pip install requests_gssapi`')
+            raise ex
+        # pylint: enable=import-outside-toplevel
+        ret = {
+            'auth': HTTPSPNEGOAuth()
         }
     elif auth_type == 'basic':
         ret = {

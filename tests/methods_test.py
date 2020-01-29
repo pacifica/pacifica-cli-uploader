@@ -50,6 +50,10 @@ class TestMethods(TestCase):
             self.assertTrue(generate_requests_auth(conf)
                             ['auth'][0], 'username')
             self.assertTrue(generate_requests_auth(conf)['auth'], 'password')
+        with ConfigClient('gssapi') as conf:
+            with self.assertRaises(ImportError) as excinfo:
+                generate_requests_auth(conf)
+            self.assertTrue('No module named' in excinfo.exception.msg)
 
     def test_verify_type(self):
         """Test the verify_type method to cover everything."""

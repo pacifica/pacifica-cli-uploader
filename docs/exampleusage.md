@@ -37,6 +37,7 @@ There are three kinds of authentication types supported.
 
 - clientssl - This is where you have an SSL client key and cert
 - basic     - This is a username and password
+- gssapi    - Use GSSAPI tickets to authenticate
 - None      - Do not perform any authentication
 
 Authentication Type (None): basic

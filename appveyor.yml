@@ -139,10 +139,11 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload travis;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --tar-in-tar README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar README.md;
+    tar -xf retry.tar metadata.txt;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-retry retry.tar;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --nowait README.md;
-    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xv;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xsv;
     coverage report --show-missing --fail-under 100
