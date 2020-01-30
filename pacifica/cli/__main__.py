@@ -8,6 +8,7 @@ from os import getenv, path
 from json import loads
 from jsonschema import validate
 from pacifica.uploader.metadata import metadata_decode
+from ._version import __version__
 from .methods import upload, configure, download
 from .utils import system_config_path, user_config_path, compressor_generator
 
@@ -88,6 +89,10 @@ def main():
     parser.add_argument(
         '--verbose', dest='verbose', default='info',
         help='Enable verbose logging.', required=False
+    )
+    parser.add_argument(
+        '--version', action='version',
+        version='%(prog)s {version}'.format(version=__version__)
     )
     upload_parser.add_argument(
         '--follow-links', default=False, action='store_true', dest='followlinks',
