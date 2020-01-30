@@ -111,9 +111,6 @@ def generate_global_config():
         global_ini.read(system_config)
     if isfile(user_config):
         global_ini.read(user_config)
-    else:
-        print('Generating New Configuration.')
-    save_user_config(global_ini)
     set_environment_vars(global_ini)
     return global_ini
 
