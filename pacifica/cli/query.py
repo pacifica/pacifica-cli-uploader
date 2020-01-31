@@ -171,7 +171,7 @@ def query_main(md_update, args):
             regex = '.*'
         filter_results(md_update, query_obj, regex)
         default_id = getattr(args, query_obj.metaID, None)
-        if not default_id:
+        if not default_id or query_obj.metaID == 'logon':
             default_id = md_update[query_obj.metaID].value
         set_results(
             md_update,

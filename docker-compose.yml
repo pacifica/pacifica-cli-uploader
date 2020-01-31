@@ -137,6 +137,8 @@ services:
     - archiveinterface:archivei
     volumes:
     - cartddata:/shared
+    ports:
+    - 8081:8081
     environment:
       PEEWEE_ADDR: mysql
       BROKER_URL: pyamqp://guest:guest@amqp:5672//
