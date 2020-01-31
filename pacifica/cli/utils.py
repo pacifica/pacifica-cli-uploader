@@ -3,7 +3,7 @@
 """Utilities module for common methods."""
 import sys
 from os import makedirs, sep
-from os.path import expanduser, join, isdir, isfile
+from os.path import expanduser, join, isdir, isfile, isabs
 from bz2 import BZ2Compressor
 from zlib import compress
 
@@ -19,6 +19,8 @@ def system_config_path(config_file):
 
 def user_config_path(config_file):
     """Return the global configuration path."""
+    if isabs(config_file):
+        return config_file
     home = expanduser('~')
     pacifica_local_state = join(home, '.pacifica_cli')
     if not isdir(pacifica_local_state):

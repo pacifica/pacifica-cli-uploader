@@ -21,6 +21,8 @@ before_script:
     curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=103'
     curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=104'
   - python tests/generate_ce_stub_test.py
+  - pip install 'redis<3.4'
+  - for x in ingest cartd notify ; do for y in frontend backend; do sudo systemctl restart ${x}_${y}.service; done ; done
 install:
 - pip install -r requirements-dev.txt
 script:

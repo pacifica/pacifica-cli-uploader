@@ -13,3 +13,4 @@ pylint
 pytest
 radon
 recommonmark
+redis<3.4

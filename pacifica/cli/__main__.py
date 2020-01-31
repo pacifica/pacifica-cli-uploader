@@ -87,6 +87,10 @@ def main():
         help='Upload configuration metadata.', required=False
     )
     parser.add_argument(
+        '--config-ini', dest='config_ini', default=getenv('PACIFICA_CLI_INI', 'config.ini'),
+        help='Endpoint configuration ini file.', required=False
+    )
+    parser.add_argument(
         '--verbose', dest='verbose', default='info',
         help='Enable verbose logging.', required=False
     )
