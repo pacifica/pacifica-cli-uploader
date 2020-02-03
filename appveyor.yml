@@ -132,6 +132,7 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --local-save retry.tar --local-compress BLAH;
     if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
     echo "Done with failure testing";
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --instrument 54 --logon dmlb2001 SOMETHING_THAT_DOES_NOT_EXIST.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --project-regex 'expired closed and end';
     Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10;
     Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11;

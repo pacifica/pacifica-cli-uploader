@@ -155,7 +155,7 @@ def main():
     download_parser.set_defaults(func=download)
 
     args = parser.parse_args(argv[1:])
-    args.func(args, config_data)
+    return args.func(args, config_data)
 
 
 if __name__ == '__main__':

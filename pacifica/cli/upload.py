@@ -5,6 +5,7 @@ from __future__ import print_function
 from threading import Thread
 from json import dumps
 from copy import deepcopy
+import errno
 from sys import stdout
 from os import pipe, fdopen, walk, stat
 from os.path import isfile, isdir, sep, join
@@ -36,6 +37,8 @@ def build_file_list_from_args(file_list, followlinks):
             ret.extend(generate_names_from_dir(path, followlinks))
         elif isfile(path):
             ret.append(path)
+        else:
+            raise OSError(errno.ENOENT, '{} is not a file or directory.'.format(path))
     return ret
 
 
@@ -70,15 +73,17 @@ def check(status):
 
 def save_local(rfd, wfd, save_filename, compressor):
     """Save the bytes from rfd to args.savelocal and wfd."""
-    with open(save_filename, 'wb') as sfd:
-        buf = rfd.read(BLOCK_SIZE)
-        while buf:
-            sfd.write(compressor.compress(buf))
-            wfd.write(buf)
+    try:
+        with open(save_filename, 'wb') as sfd:
             buf = rfd.read(BLOCK_SIZE)
-        sfd.write(compressor.flush())
-    rfd.close()
-    wfd.close()
+            while buf:
+                sfd.write(compressor.compress(buf))
+                wfd.write(buf)
+                buf = rfd.read(BLOCK_SIZE)
+            sfd.write(compressor.flush())
+    finally:
+        rfd.close()
+        wfd.close()
 
 
 def tar_in_tar(rfd, wfd, md_update, bundle_size):
@@ -89,10 +94,12 @@ def tar_in_tar(rfd, wfd, md_update, bundle_size):
         'size': bundle_size,
         'mtime': (datetime.now() - datetime(1970, 1, 1)).total_seconds()
     }]
-    bundle = bundler.Bundler(md_update, upload_files)
-    bundle.stream(wfd)
-    rfd.close()
-    wfd.close()
+    try:
+        bundle = bundler.Bundler(md_update, upload_files)
+        bundle.stream(wfd)
+    finally:
+        rfd.close()
+        wfd.close()
 
 
 def pipefds():
@@ -254,6 +261,9 @@ def upload_main(md_update, args):
     content_length, tar_size, tar_in_tar_size = determine_sizes(
         md_update, args)
     LOGGER.debug('Size of tar %s tar_in_tar %s', tar_size, tar_in_tar_size)
+    if not content_length:
+        LOGGER.error('Something went wrong generating the tarfile.')
+        return -1
     jobid, up_obj = perform_upload(md_update, args, content_length, tar_size)
     status = wait_for_upload(args, jobid, up_obj)
     print(dumps(status, sort_keys=True, indent=4, separators=(',', ': ')))
@@ -265,13 +275,16 @@ def setup_bundler(wfd, md_update, args, wthreads):
     if args.localretry:
         def read_bundle():
             """Read a bundle and send it to wfd."""
-            with open(args.localretry, 'rb') as rfd:
-                buf = rfd.read(BLOCK_SIZE)
-                while buf:
-                    wfd.write(buf)
+            try:
+                with open(args.localretry, 'rb') as rfd:
                     buf = rfd.read(BLOCK_SIZE)
-            wfd.close()
-            LOGGER.debug('Done with reading bundle.')
+                    while buf:
+                        wfd.write(buf)
+                        buf = rfd.read(BLOCK_SIZE)
+                wfd.close()
+                LOGGER.debug('Done with reading bundle.')
+            finally:
+                wfd.close()
         wthread = Thread(target=read_bundle)
         wthread.daemon = True
         wthread.start()
@@ -280,20 +293,23 @@ def setup_bundler(wfd, md_update, args, wthreads):
 
     def make_bundle():
         """Make the bundler out of files on cmdline."""
-        upload_files = upload_files_from_args(
-            args.files, args.followlinks, md_update.directory_prefix())
-        LOGGER.debug(upload_files)
-        LOGGER.debug(md_update)
-        bundle = bundler.Bundler(md_update, upload_files)
-        bundle.stream(
-            wfd,
-            callback=lambda x: stdout.write(
-                '\r' + ' ' * 80 + '\r{:03.2f}%\r'.format(x * 100)),
-            sleeptime=2
-        )
-        wfd.close()
-        stdout.write('\r        \r')
-        LOGGER.debug('Done with making bundle.')
+        try:
+            upload_files = upload_files_from_args(
+                args.files, args.followlinks, md_update.directory_prefix())
+            LOGGER.debug(upload_files)
+            LOGGER.debug(md_update)
+            bundle = bundler.Bundler(md_update, upload_files)
+            bundle.stream(
+                wfd,
+                callback=lambda x: stdout.write(
+                    '\r' + ' ' * 80 + '\r{:03.2f}%\r'.format(x * 100)),
+                sleeptime=2
+            )
+            wfd.close()
+            stdout.write('\r        \r')
+            LOGGER.debug('Done with making bundle.')
+        finally:
+            wfd.close()
     wthread = Thread(target=make_bundle)
     wthread.daemon = True
     wthread.start()

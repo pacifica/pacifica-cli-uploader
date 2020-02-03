@@ -72,7 +72,7 @@ $COV_RUN -a -m pacifica.cli upload --dry-run --logon dmlb2001 --project-regex 'e
 ############################
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=10' -d'{ "network_id": "'`whoami`'"}'
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -d'{ "network_id": "someoneelse"}'
-$COV_RUN -a -m pacifica.cli upload SOMETHING_THAT_DOES_NOT_EXIST.txt || true
+$COV_RUN -a -m pacifica.cli upload SOMETHING_THAT_DOES_NOT_EXIST.txt
 export PACIFICA_CLI_INI="/home/travis/.pacifica_cli/config.ini"
 $COV_RUN -a -m pacifica.cli upload README.md
 $COV_RUN -a -m pacifica.cli upload travis
