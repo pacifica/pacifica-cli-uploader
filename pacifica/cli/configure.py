@@ -64,7 +64,7 @@ def configure_client_ssl(global_ini):
 
 
 def configure_basic_auth(global_ini):
-    """Query and set the client ssl key and cert."""
+    """Query and set the client username and password."""
     for auth_part in ['username', 'password']:
         default_cfg = global_ini.get('authentication', auth_part)
         stdout.write('{} ({}): '.format(auth_part.capitalize(), default_cfg))
@@ -81,13 +81,14 @@ There are three kinds of authentication types supported.
 
 - clientssl - This is where you have an SSL client key and cert
 - basic     - This is a username and password
+- gssapi    - Use GSSAPI tickets to authenticate
 - None      - Do not perform any authentication
 """)
     default_auth_type = global_ini.get('authentication', 'type')
     stdout.write('Authentication Type ({}): '.format(default_auth_type))
     stdout.flush()
     strip_input = stdin.readline().strip()
-    if strip_input and strip_input in ['clientssl', 'basic', 'None']:
+    if strip_input and strip_input in ['clientssl', 'basic', 'gssapi', 'None']:
         global_ini.set('authentication', 'type', strip_input)
     auth_type = global_ini.get('authentication', 'type')
     if auth_type == 'clientssl':

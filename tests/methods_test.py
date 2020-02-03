@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 """Test the methods module for things we need to test."""
 from unittest import TestCase
-try:  # python 2 import
-    from ConfigParser import ConfigParser
-except ImportError:  # pragma: no cover python 3 import
-    from configparser import ConfigParser
+from configparser import ConfigParser
 from pacifica.cli.methods import generate_requests_auth, verify_type
 
 
 # pylint: disable=too-few-public-methods
-class ConfigClient(object):
+class ConfigClient:
     """Class to generate sample config."""
 
     def __init__(self, auth_type):
@@ -53,6 +50,10 @@ class TestMethods(TestCase):
             self.assertTrue(generate_requests_auth(conf)
                             ['auth'][0], 'username')
             self.assertTrue(generate_requests_auth(conf)['auth'], 'password')
+        with ConfigClient('gssapi') as conf:
+            with self.assertRaises(ImportError) as excinfo:
+                generate_requests_auth(conf)
+            self.assertTrue('No module named' in excinfo.exception.msg)
 
     def test_verify_type(self):
         """Test the verify_type method to cover everything."""

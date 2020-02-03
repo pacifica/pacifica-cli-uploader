@@ -14,6 +14,12 @@ The user configuration is processed second, if found. The directory the
 client looks in by default is `~/.pacifica_cli/config.ini`. The `~`
 translates to the users home directory on any platform.
 
+Optionally, users can manage their config files in their home directory
+and set the `--config-ini` command-line argument. This switch will
+try to open the given file in `~/.pacifica_cli/` and merge it with
+the system configurations. Also, setting the environment variable
+`PACIFICA_CLI_INI` can also be sufficient to change the file name.
+
 ## System Metadata
 
 The metadata is managed by a JSON configuration file referenced by an

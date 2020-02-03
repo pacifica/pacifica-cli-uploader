@@ -45,6 +45,11 @@ python -m pacifica.cli configure
 ############################
 $COV_RUN -a -m pacifica.cli download --transaction-id 67
 $COV_RUN -a -m pacifica.cli download --cloudevent ce_stub.json
+export AUTHENTICATION_USERNAME='test'
+export AUTHENTICATION_PASSWORD='test'
+$COV_RUN -a -m pacifica.cli download --transaction-id 67
+unset AUTHENTICATION_USERNAME
+unset AUTHENTICATION_PASSWORD
 
 ############################
 # Query commands
@@ -68,21 +73,26 @@ $COV_RUN -a -m pacifica.cli upload --dry-run --logon dmlb2001 --project-regex 'e
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=10' -d'{ "network_id": "'`whoami`'"}'
 curl -X POST -H 'content-type: application/json' 'localhost:8121/users?_id=11' -d'{ "network_id": "someoneelse"}'
 $COV_RUN -a -m pacifica.cli upload SOMETHING_THAT_DOES_NOT_EXIST.txt || true
+export PACIFICA_CLI_INI="/home/travis/.pacifica_cli/config.ini"
 $COV_RUN -a -m pacifica.cli upload README.md
 $COV_RUN -a -m pacifica.cli upload travis
 $COV_RUN -a -m pacifica.cli upload --tar-in-tar README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar README.md
 tar -xf retry.tar metadata.txt
-python travis/check_metadata_test.py
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md
 $COV_RUN -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md
 $COV_RUN -a -m pacifica.cli upload --local-retry retry.tar
 $COV_RUN -a -m pacifica.cli upload --nowait README.md
+export AUTHENTICATION_USERNAME='test'
+export AUTHENTICATION_PASSWORD='test'
+$COV_RUN -a -m pacifica.cli upload README.md
+unset AUTHENTICATION_USERNAME
+unset AUTHENTICATION_PASSWORD
 
 ############################
 # PyTest coverage
 ############################
-$COV_RUN -a -m pytest -v
+$COV_RUN -a -m pytest -xsv
 
 coverage report --show-missing --fail-under 100

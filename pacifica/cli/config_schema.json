@@ -1,0 +1,46 @@
+{
+  "items": {
+    "properties": {
+      "destinationTable": {
+        "type": "string"
+      },
+      "displayFormat": {
+        "type": "string"
+      },
+      "displayTitle": {
+        "type": "string"
+      },
+      "displayType": {
+        "type": "string"
+      },
+      "metaID": {
+        "type": "string"
+      },
+      "queryDependencies": {
+        "type": "object"
+      },
+      "queryFields": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "sourceTable": {
+        "type": "string"
+      },
+      "value": {
+        "type": "string"
+      },
+      "valueField": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "destinationTable",
+      "metaID",
+      "value"
+    ],
+    "type": "object"
+  },
+  "type": "array"
+}

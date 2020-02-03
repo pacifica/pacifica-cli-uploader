@@ -3,13 +3,11 @@
 """Methods for the sub commands to run."""
 from __future__ import absolute_import, print_function
 import logging
-try:  # try loading python 2 module first
-    from ConfigParser import ConfigParser
-except ImportError:  # pragma: no cover python 3
-    from configparser import ConfigParser
+from configparser import ConfigParser
 from getpass import getuser
 from os import environ, getenv
 from os.path import isfile
+import warnings
 from json import loads
 import requests
 from pacifica.uploader.uploader import LOGGER as UP_LOGGER
@@ -52,9 +50,9 @@ def set_environment_vars(global_ini):
         'endpoints', 'upload_status_url')
 
 
-def generate_global_config():
+def generate_global_config(config_ini='config.ini'):
     """Generate a default configuration."""
-    user_config = user_config_path('config.ini')
+    user_config = user_config_path(config_ini)
     system_config = system_config_path('config.ini')
     global_ini = ConfigParser()
     global_ini.add_section('globals')
@@ -113,9 +111,6 @@ def generate_global_config():
         global_ini.read(system_config)
     if isfile(user_config):
         global_ini.read(user_config)
-    else:
-        print('Generating New Configuration.')
-    save_user_config(global_ini)
     set_environment_vars(global_ini)
     return global_ini
 
@@ -145,11 +140,24 @@ def generate_requests_auth(global_ini):
                 global_ini.get('authentication', 'key')
             )
         }
+    elif auth_type == 'gssapi':  # pragma: no cover don't have kerberos available to test with
+        # pylint: disable=import-outside-toplevel
+        try:
+            from requests_gssapi import HTTPSPNEGOAuth
+        except ImportError as ex:
+            warnings.warn('Unable to import requests_gssapi please `pip install requests_gssapi`')
+            raise ex
+        # pylint: enable=import-outside-toplevel
+        ret = {
+            'auth': HTTPSPNEGOAuth()
+        }
     elif auth_type == 'basic':
         ret = {
             'auth': (
-                global_ini.get('authentication', 'username'),
-                global_ini.get('authentication', 'password')
+                getenv('AUTHENTICATION_USERNAME',
+                       global_ini.get('authentication', 'username')),
+                getenv('AUTHENTICATION_PASSWORD',
+                       global_ini.get('authentication', 'password'))
             )
         }
     ret['verify'] = verify_type(global_ini.get('endpoints', 'ca_bundle'))
@@ -159,7 +167,7 @@ def generate_requests_auth(global_ini):
 def download(args, _interface_data):
     """Download data specified in args."""
     set_verbose(args.verbose)
-    global_ini = generate_global_config()
+    global_ini = generate_global_config(args.config_ini)
     auth = generate_requests_auth(global_ini)
     dl_obj = Downloader(
         cart_api_url=global_ini.get('endpoints', 'download_url'),
@@ -182,7 +190,7 @@ def upload(args, interface_data):
 def query(args, interface_data):
     """Query from the metadata configuration."""
     set_verbose(args.verbose)
-    global_ini = generate_global_config()
+    global_ini = generate_global_config(args.config_ini)
     auth = generate_requests_auth(global_ini)
     user_name = getattr(args, 'logon', None)
     if not user_name:
@@ -192,9 +200,9 @@ def query(args, interface_data):
     return query_main(md_update, args)
 
 
-def configure(_args, _config_data):
+def configure(args, _config_data):
     """Configure the client by parsing current configuration."""
-    global_ini = generate_global_config()
+    global_ini = generate_global_config(args.config_ini)
     configure_url_endpoints(global_ini)
     configure_ca_bundle(global_ini)
     configure_auth(global_ini)

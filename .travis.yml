@@ -1,48 +1,44 @@
 sudo: required
-dist: xenial
-services:
-- postgresql
-- redis-server
+dist: bionic
 language: python
+python: 3.6
 stages:
 - lint
 - test
 - test-docker
 - deploy
 cache: pip
-".before_install": &3
-- bash -xe travis/before-install.sh
-".install": &1
+before_script:
+  - pip install ansible
+  - ansible-galaxy install pacifica.ansible_pacifica pacifica.ansible_travis
+  - ansible-playbook ~/.ansible/roles/pacifica.ansible_travis/molecule/common/playbook.yml -i ~/.ansible/roles/pacifica.ansible_travis/molecule/common/inventory.yml -e "ansible_python_interpreter=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/python travis_virtualenv=python${TRAVIS_PYTHON_VERSION} github_repository=cli"
+  - |
+    curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/103
+    curl -X PUT -H 'Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT' --upload-file README.md http://127.0.0.1:8080/104
+    readme_size=$(stat -c '%s' README.md)
+    readme_sha1=$(sha1sum README.md | awk '{ print $1 }')
+    echo '{ "hashsum": "'$readme_sha1'", "hashtype": "sha1", "size": '$readme_size'}' > /tmp/file-104-update.json
+    curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=103'
+    curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=104'
+  - python tests/generate_ce_stub_test.py
+  - pip install 'redis<3.4'
+  - for x in ingest cartd notify ; do for y in frontend backend; do sudo systemctl restart ${x}_${y}.service; done ; done
+install:
 - pip install -r requirements-dev.txt
-".script": &4
+script:
 - bash -xe travis/unit-tests.sh
 - bash -xe travis/test-deploy.sh
-".lint_script": &2
-- pre-commit run -a
-- radon cc pacifica
 jobs:
   include:
   - stage: lint
-    services: []
-    python: 3.6
-    install: *1
-    script: *2
-  - python: 2.7
-    services: []
-    script: *2
-    install: *1
+    before_script: skip
+    script:
+    - pre-commit run -a
+    - radon cc pacifica
   - stage: test
-    python: 2.7
-    before_install: *3
-    install: *1
-    script: *4
-  - python: 3.6
-    before_install: *3
-    install: *1
-    script: *4
   - stage: test-docker
+    before_script: skip
     sudo: required
-    python: 3.6
     services:
     - docker
     script:
@@ -66,30 +62,13 @@ jobs:
       docker run -t --rm --network=pacifica-cli_default pacifica/cli upload --logon 10 tests;
       docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
   - stage: deploy
-    services: []
-    language: python
-    before_install: skip
+    before_script: skip
     script: skip
-    python: 3.6
     deploy:
       skip_cleanup: true
       provider: pypi
       user: dmlb2000
       distributions: sdist bdist_wheel
-      password:
-        secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
-      on:
-        tags: true
-  - services: []
-    language: python
-    before_install: skip
-    script: skip
-    python: 2.7
-    deploy:
-      skip_cleanup: true
-      provider: pypi
-      user: dmlb2000
-      distributions: bdist_wheel
       password:
         secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
       on:

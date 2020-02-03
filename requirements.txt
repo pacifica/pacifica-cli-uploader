@@ -1,4 +1,5 @@
+jsonschema
 pacifica-downloader
+pacifica-namespace
 pacifica-uploader
 pager
-six

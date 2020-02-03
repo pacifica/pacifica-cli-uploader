@@ -3,8 +3,12 @@
 """The CLI module contains all the logic needed to run a CLI."""
 import sys
 import argparse
+import warnings
 from os import getenv, path
+from json import loads
+from jsonschema import validate
 from pacifica.uploader.metadata import metadata_decode
+from ._version import __version__
 from .methods import upload, configure, download
 from .utils import system_config_path, user_config_path, compressor_generator
 
@@ -18,21 +22,21 @@ def arg_to_compressor_obj(str_obj=None):
     return compressor_generator(str_obj)
 
 
-def mangle_config_argument(argv):
+def mangle_config_argument(argv, default_config):
     """Get the config argument out of argv and return stripped version."""
     config_arg = '--config'
     len_arg = len(config_arg)
     starts_argv = [arg[:len_arg] for arg in argv]
-    if config_arg in starts_argv:
-        if config_arg in argv:
-            config_file = argv[argv.index(config_arg) + 1]
-            del argv[argv.index(config_arg) + 1]
-            del argv[argv.index(config_arg)]
-        else:
-            config_file = argv[starts_argv.index(config_arg)][len_arg + 1:]
-            del argv[starts_argv.index(config_arg)]
-        return (config_file, argv)
-    return (None, argv)
+    if config_arg not in starts_argv:
+        return (default_config, argv)
+    if config_arg in argv:
+        config_file = argv[argv.index(config_arg) + 1]
+        del argv[argv.index(config_arg) + 1]
+        del argv[argv.index(config_arg)]
+    else:
+        config_file = argv[starts_argv.index(config_arg)][len_arg + 1:]
+        del argv[starts_argv.index(config_arg)]
+    return (config_file, argv)
 
 
 def parse_uploader_config(upload_parser):
@@ -42,26 +46,28 @@ def parse_uploader_config(upload_parser):
         'UPLOADER_CONFIG', system_config_path(upload_file_name))
     if default_config == upload_file_name and path.isfile(user_config_path(upload_file_name)):
         default_config = user_config_path(upload_file_name)
-    config_file, argv = mangle_config_argument(sys.argv)
-    if not config_file:
-        config_file = default_config
-    if path.isfile(config_file):
-        config_data = metadata_decode(open(config_file).read())
-        for config_part in config_data:
-            if not config_part.value:
-                upload_parser.add_argument(
-                    '--{}-regex'.format(config_part.metaID), required=False,
-                    dest='{}_regex'.format(config_part.metaID),
-                    help='{} regular expression match.'.format(
-                        config_part.displayTitle)
-                )
-                upload_parser.add_argument(
-                    '--{}'.format(config_part.metaID), '-{}'.format(
-                        config_part.metaID[0]),
-                    help=config_part.displayTitle, required=False
-                )
-        return config_file, argv, config_data
-    return default_config, sys.argv, None
+    config_file, argv = mangle_config_argument(sys.argv, default_config)
+    if not path.isfile(config_file):
+        warnings.warn('Config File {} is not a file or is not accessible'.format(config_file))
+        return default_config, sys.argv, None
+    json_str = open(config_file).read()
+    schema = loads(open(path.join(path.dirname(__file__), 'config_schema.json')).read())
+    validate(loads(json_str), schema)
+    config_data = metadata_decode(json_str)
+    for config_part in config_data:
+        if not config_part.value:
+            upload_parser.add_argument(
+                '--{}-regex'.format(config_part.metaID), required=False,
+                dest='{}_regex'.format(config_part.metaID),
+                help='{} regular expression match.'.format(
+                    config_part.displayTitle)
+            )
+            upload_parser.add_argument(
+                '--{}'.format(config_part.metaID), '-{}'.format(
+                    config_part.metaID[0]),
+                help=config_part.displayTitle, required=False
+            )
+    return config_file, argv, config_data
 
 
 def main():
@@ -81,8 +87,16 @@ def main():
         help='Upload configuration metadata.', required=False
     )
     parser.add_argument(
+        '--config-ini', dest='config_ini', default=getenv('PACIFICA_CLI_INI', 'config.ini'),
+        help='Endpoint configuration ini file.', required=False
+    )
+    parser.add_argument(
         '--verbose', dest='verbose', default='info',
         help='Enable verbose logging.', required=False
+    )
+    parser.add_argument(
+        '--version', action='version',
+        version='%(prog)s {version}'.format(version=__version__)
     )
     upload_parser.add_argument(
         '--follow-links', default=False, action='store_true', dest='followlinks',

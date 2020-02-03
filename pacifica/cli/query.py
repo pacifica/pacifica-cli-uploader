@@ -5,14 +5,14 @@ from __future__ import print_function
 from sys import stdin, stdout, stderr
 from subprocess import Popen, PIPE
 from os import getenv, pathsep, path
+from functools import cmp_to_key
 import re
-from six import text_type, PY2
 
 
 def set_query_obj(dep_meta_ids, md_update, obj):
     """Return the query object or false."""
     if dep_meta_ids:
-        if set([bool(md_update[dep_id].value) for dep_id in dep_meta_ids]) == set([True]):
+        if {bool(md_update[dep_id].value) for dep_id in dep_meta_ids} == {True}:
             return obj
         return None
     return obj
@@ -40,16 +40,11 @@ def paged_content(title, display_data, valid_ids):
         int_a = int(num_re.match(a_id).group(0))
         int_b = int(num_re.match(b_id).group(0))
         return int_a < int_b
-    yield text_type("""
+    yield """
 {} - Select an ID
 =====================================
-""").format(title)
-    if PY2:  # pragma: no cover python 2 only
-        sort_args = {'cmp': id_cmp}
-    else:  # pragma: no cover python 3+ only
-        from functools import cmp_to_key
-        sort_args = {'key': cmp_to_key(id_cmp)}
-    for _id in sorted(valid_ids, **sort_args):
+""".format(title)
+    for _id in sorted(valid_ids, key=cmp_to_key(id_cmp)):
         yield display_data[_id]
 
 
@@ -58,9 +53,8 @@ def format_query_results(md_update, query_obj):
     valid_ids = []
     display_data = {}
     for obj in md_update[query_obj.metaID].query_results:
-        valid_ids.append(text_type(obj[query_obj.valueField]))
-        display_data[text_type(
-            obj[query_obj.valueField])] = md_update[query_obj.metaID].displayFormat.format(**obj)
+        valid_ids.append(str(obj[query_obj.valueField]))
+        display_data[str(obj[query_obj.valueField])] = md_update[query_obj.metaID].displayFormat.format(**obj)
     return (valid_ids, display_data)
 
 
@@ -68,7 +62,7 @@ def set_selected_id(selected_id, default_id, valid_ids):
     """Return the selected ID validating it first."""
     if not selected_id:
         selected_id = default_id
-    if text_type(selected_id) not in valid_ids:
+    if str(selected_id) not in valid_ids:
         selected_id = False
     return selected_id
 
@@ -110,7 +104,7 @@ def execute_pager(content):
         stdout=stdout,
         stderr=stderr
     )
-    pager_proc.communicate(text_type('\n').join(content).encode('utf-8'))
+    pager_proc.communicate('\n'.join(content).encode('utf-8'))
     return pager_proc.wait()
 
 
@@ -123,7 +117,7 @@ def interactive_select_loop(md_update, query_obj, default_id):
     while not selected_id:
         execute_pager(paged_content(
             query_obj.displayTitle, display_data, valid_ids))
-        stdout.write(text_type('Select ID ({}): ').format(default_id))
+        stdout.write('Select ID ({}): '.format(default_id))
         selected_id = stdin.readline().strip()
         selected_id = set_selected_id(selected_id, default_id, valid_ids)
     return selected_id
@@ -134,10 +128,7 @@ def set_results(md_update, query_obj, default_id, interactive=False):
     if interactive:
         selected_id = interactive_select_loop(md_update, query_obj, default_id)
     else:
-        print_text = text_type('Setting {} to {}.').format(
-            query_obj.metaID, default_id)
-        if PY2:  # pragma: no cover python 2 only
-            print_text = print_text.encode('utf8')
+        print_text = 'Setting {} to {}.'.format(query_obj.metaID, default_id)
         print(print_text)
         selected_id = default_id
     if selected_id != md_update[query_obj.metaID].value:
@@ -152,7 +143,7 @@ def filter_results(md_update, query_obj, regex):
     filtered_results = []
     for index in range(len(query_obj.query_results)):
         res = query_obj.query_results[index]
-        if reg_engine.search(display_data[text_type(res[query_obj.valueField])]):
+        if reg_engine.search(display_data[str(res[query_obj.valueField])]):
             filtered_results.append(query_obj.query_results[index])
     md_update[query_obj.metaID] = query_obj._replace(
         query_results=filtered_results)
@@ -177,10 +168,10 @@ def query_main(md_update, args):
         query_obj = find_leaf_node(md_update)
         regex = getattr(args, '{}_regex'.format(query_obj.metaID))
         if not regex:
-            regex = text_type('.*')
+            regex = '.*'
         filter_results(md_update, query_obj, regex)
         default_id = getattr(args, query_obj.metaID, None)
-        if not default_id:
+        if not default_id or query_obj.metaID == 'logon':
             default_id = md_update[query_obj.metaID].value
         set_results(
             md_update,
@@ -189,7 +180,6 @@ def query_main(md_update, args):
             args.interactive
         )
         if not md_update[query_obj.metaID].value:
-            raise RuntimeError(
-                text_type('Could not find value for {}').format(query_obj.metaID))
+            raise RuntimeError('Could not find value for {}'.format(query_obj.metaID))
     remove_results(md_update)
     return md_update

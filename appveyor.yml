@@ -12,7 +12,6 @@ environment:
   BACKEND_URL: redis://127.0.0.1:6379/0
 
   matrix:
-    - PYTHON: C:\Python27-x64
     - PYTHON: C:\Python36-x64
 
 services:
@@ -87,7 +86,6 @@ install:
     C:\pacifica\Scripts\activate.ps1;
     python -m pip install pip setuptools wheel --upgrade;
     pip install -r requirements-dev.txt;
-    pip install celery[redis] 'redis';
     echo "Done";
 
 build: off
@@ -95,6 +93,7 @@ build: off
 test_script:
 - ps: >
     C:\pacifica\Scripts\activate.ps1;
+    $home_var = `python -c "from os.path import expanduser; print(expanduser('~'))";
     pip install .;
     cd tests;
     cp -r ../travis .;
@@ -136,14 +135,16 @@ test_script:
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --dry-run --logon dmlb2001 --project-regex 'expired closed and end';
     Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"appveyor" }' http://localhost:8121/users?_id=10;
     Invoke-WebRequest -Method POST -Headers @{ "content-type" = "application/json" } -Body '{ "network_id":"someoneelse" }' http://localhost:8121/users?_id=11;
+    $env:PACIFICA_CLI_INI = "$home_var\.pacifica_cli\config.ini";
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload travis;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --tar-in-tar README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar README.md;
+    tar -xf retry.tar metadata.txt;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress bzip2 README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --local-compress gzip README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-save retry.tar --do-not-upload README.md;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --local-retry retry.tar;
     coverage run --include='*/site-packages/pacifica/cli/*' -a -m pacifica.cli upload --nowait README.md;
-    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xv;
+    coverage run --include='*/site-packages/pacifica/cli/*' -a -m pytest -xsv;
     coverage report --show-missing --fail-under 100
