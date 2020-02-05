@@ -35,8 +35,21 @@ jobs:
     script:
     - pre-commit run -a
     - radon cc pacifica
+  - python: 3.7
+    before_script: skip
+    script:
+    - pre-commit run -a
+    - radon cc pacifica
+  - python: 3.8
+    before_script: skip
+    script:
+    - pre-commit run -a
+    - radon cc pacifica
   - stage: test
+  - python: 3.7
+  - python: 3.8
   - stage: test-docker
+    python: 3.8
     before_script: skip
     sudo: required
     services:
@@ -63,6 +76,7 @@ jobs:
       docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
   - stage: deploy
     before_script: skip
+    python: 3.8
     script: skip
     deploy:
       skip_cleanup: true
