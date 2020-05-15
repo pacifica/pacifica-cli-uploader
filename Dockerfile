@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.8
 
 ENV UPLOAD_URL http://ingestfrontend:8066/upload
 ENV UPLOAD_STATUS_URL http://ingestfrontend:8066/get_state
@@ -7,8 +7,6 @@ ENV UPLOAD_VALIDATION_URL http://policyserver:8181/ingest
 ENV DOWNLOAD_URL http://cartdfrontend:8081
 ENV DOWNLOAD_POLICY_URL http://policyserver:8181/status/transactions/by_id
 WORKDIR /usr/src/app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pip install .
 RUN mkdir /etc/pacifica-cli

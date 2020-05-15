@@ -3,10 +3,11 @@ dist: bionic
 language: python
 python: 3.6
 stages:
-- lint
-- test
-- test-docker
-- deploy
+  - lint
+  - test
+  - test-docs
+  - test-docker
+  - deploy
 cache: pip
 before_script:
   - pip install ansible
@@ -21,69 +22,78 @@ before_script:
     curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=103'
     curl -X POST -H 'content-type: application/json' -T /tmp/file-104-update.json 'http://localhost:8121/files?_id=104'
   - python tests/generate_ce_stub_test.py
-  - pip install 'redis<3.4'
   - for x in ingest cartd notify ; do for y in frontend backend; do sudo systemctl restart ${x}_${y}.service; done ; done
 install:
-- pip install -r requirements-dev.txt
+  - pip install -r requirements-dev.txt
+  - pip install .
 script:
-- bash -xe travis/unit-tests.sh
-- bash -xe travis/test-deploy.sh
+  - bash -xe travis/unit-tests.sh
+  - bash -xe travis/test-deploy.sh
 jobs:
   include:
-  - stage: lint
-    before_script: skip
-    script:
-    - pre-commit run -a
-    - radon cc pacifica
-  - python: 3.7
-    before_script: skip
-    script:
-    - pre-commit run -a
-    - radon cc pacifica
-  - python: 3.8
-    before_script: skip
-    script:
-    - pre-commit run -a
-    - radon cc pacifica
-  - stage: test
-  - python: 3.7
-  - python: 3.8
-  - stage: test-docker
-    python: 3.8
-    before_script: skip
-    sudo: required
-    services:
-    - docker
-    script:
-    - |
-      docker-compose build --pull;
-      docker-compose pull;
-      docker-compose up -d;
-      docker build -t pacifica/cli .;
-    - |
-      MAX_TRIES=60;
-      HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
-      while [[ $HTTP_CODE != 200 && $MAX_TRIES > 0 ]] ; do
-        sleep 2;
-        HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
-        MAX_TRIES=$(( MAX_TRIES - 1 ));
-      done;
-      docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys
-    - |
-      docker-compose exec metadataserver /bin/bash -c 'cd /usr/src/app/tests; python test_files/loadit_test.py';
-      curl http://127.0.0.1:8181/status/users/search/dmlb2001/simple;
-      docker run -t --rm --network=pacifica-cli_default pacifica/cli upload --logon 10 tests;
-      docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
-  - stage: deploy
-    before_script: skip
-    python: 3.8
-    script: skip
-    deploy:
-      skip_cleanup: true
-      provider: pypi
-      user: dmlb2000
-      distributions: sdist bdist_wheel
-      password:
-        secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
-      on:
-        tags: true
+    - stage: lint
+      before_script: skip
+      script:
+      - pre-commit run -a
+      - radon cc pacifica
+    - python: 3.7
+      before_script: skip
+      script:
+      - pre-commit run -a
+      - radon cc pacifica
+    - python: 3.8
+      before_script: skip
+      script:
+      - pre-commit run -a
+      - radon cc pacifica
+    - stage: test
+    - python: 3.7
+    - python: 3.8
+    - stage: test-docs
+      python: 3.8
+      before_script: skip
+      script: >
+        cd docs;
+        sphinx-build -T -E -b readthedocs -d _build/doctrees-readthedocs -D language=en . _build/html;
+        sphinx-build -T -b readthedocssinglehtmllocalmedia -d _build/doctrees-readthedocssinglehtmllocalmedia -D language=en . _build/localmedia;
+        sphinx-build -b latex -D language=en -d _build/doctrees . _build/latex;
+        sphinx-build -T -b epub -d _build/doctrees-epub -D language=en . _build/epub
+    - stage: test-docker
+      python: 3.8
+      before_script: skip
+      sudo: required
+      services:
+        - docker
+      script:
+        - |
+          docker-compose build --pull;
+          docker-compose pull;
+          docker-compose up -d;
+          docker build -t pacifica/cli .;
+        - |
+          MAX_TRIES=60;
+          HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
+          while [[ $HTTP_CODE != 200 && $MAX_TRIES > 0 ]] ; do
+            sleep 2;
+            HTTP_CODE=$(docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys -o /dev/null || true);
+            MAX_TRIES=$(( MAX_TRIES - 1 ));
+          done;
+          docker-compose exec metadataserver curl -sL -w "%{http_code}\\n" localhost:8121/keys
+        - |
+          docker-compose exec metadataserver /bin/bash -c 'cd /usr/src/app/tests; python test_files/loadit_test.py';
+          curl http://127.0.0.1:8181/status/users/search/dmlb2001/simple;
+          docker run -t --rm --network=pacifica-cli_default pacifica/cli upload --logon 10 tests;
+          docker run -t --rm --network=pacifica-cli_default pacifica/cli download --transaction-id 1 --destination /tmp/foo;
+    - stage: deploy
+      before_script: skip
+      python: 3.8
+      script: skip
+      deploy:
+        skip_cleanup: true
+        provider: pypi
+        user: dmlb2000
+        distributions: sdist bdist_wheel
+        password:
+          secure: AN8nG/iEsZ1Ol+WZyfkf9H0uFYAmU+H04j6chHHFBqWVFZcbITXa6m0KjKXg/gcGcJz4RnEwKD6qBwb8YMBDODmkmah88VgsXR+hiAJlq4cTYMEMrEewnRZ9fH3f0BCle8FSI16VeHDYOdYvMGRDJXKIn/GxNc6xNVgwEcKqf5tBOt6C+LzemlYHVbx+KBQR9kRaRJOcnLnvVS50gCamQ7YIRyBRNDFyE3luLIm5VDGPO11E9be2OrXCrpSf1fPftiqYyzpT8ttLt+0Rar5J69EC65U/ZVtiJ96Y36FNCVpj9NL+UokcLrdnlU4lSsbqttwDNskSCA6CQ1FCMjTZAgJAI/gTUv2gL3NTzGnAQtcKL8KUeMU37Au5MP4BxfMDofUvxNRdScODWyNRU1fWGmj+e22nAx+gODpiTntR+rm8LR16f+CBs0D8VT371bHjUYXu6H2mDH1lJPISGaG5gEoTH0FpVEoOg82dQAy4IikLA09ra2USaXgV4leuXcBHyxmAZTxhP1YIWXszx1XUa1DP3hqkvqecNU1QuQnG5subHan482tDNY61MDgF9o010h/CgqDU1Tui5ozyHYPjHSaErzYeXF8LUTk8f0NiOkERetzCF0vFX+ZKBvjEMwkjozMPNXZvdjJdrTb90p9dxt8/NdWtZ97jSpItoDTAxSo=
+        on:
+          tags: true
