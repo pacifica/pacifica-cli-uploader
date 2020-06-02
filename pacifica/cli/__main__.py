@@ -39,17 +39,17 @@ def mangle_config_argument(argv, default_config):
     return (config_file, argv)
 
 
-def parse_uploader_config(upload_parser):
+def parse_uploader_config(upload_parser, argv):
     """Find the uploader metadata config and parse arguments out of it."""
     upload_file_name = 'uploader.json'
     default_config = getenv(
         'UPLOADER_CONFIG', system_config_path(upload_file_name))
     if default_config == upload_file_name and path.isfile(user_config_path(upload_file_name)):
         default_config = user_config_path(upload_file_name)
-    config_file, argv = mangle_config_argument(sys.argv, default_config)
+    config_file, argv = mangle_config_argument(argv, default_config)
     if not path.isfile(config_file):
         warnings.warn('Config File {} is not a file or is not accessible'.format(config_file))
-        return default_config, sys.argv, None
+        return default_config, argv, None
     json_str = open(config_file).read()
     schema = loads(open(path.join(path.dirname(__file__), 'config_schema.json')).read())
     validate(loads(json_str), schema)
@@ -70,7 +70,7 @@ def parse_uploader_config(upload_parser):
     return config_file, argv, config_data
 
 
-def main():
+def main(argv=None):
     """Main method to deal with command line argument parsing."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='sub-command help')
@@ -80,8 +80,9 @@ def main():
         'configure', help='configure help', description='setup configuration')
     download_parser = subparsers.add_parser(
         'download', help='download help', description='perform download')
-
-    default_config, argv, config_data = parse_uploader_config(upload_parser)
+    if argv is None:
+        argv = sys.argv
+    default_config, argv, config_data = parse_uploader_config(upload_parser, argv)
     parser.add_argument(
         '--config', dest='config', default=default_config,
         help='Upload configuration metadata.', required=False
