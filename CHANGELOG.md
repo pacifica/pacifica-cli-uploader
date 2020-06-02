@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.2] - 2020-06-02
+### Added
+- Pull #79 Added argv to `main()` by [dmlb2000](https://github.com/dmlb2000)
+
 ## [0.5.1] - 2020-05-15
 ### Added
 - Pull #77 Remove Requirements Pip>=20 by [dmlb2000](https://github.com/dmlb2000)
